@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Безумная дорога 3.2 – Звук двигателя</title>
+  <title>Безумная дорога – Мышка чинится!</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#111; display:flex; justify-content:center; align-items:center; height:100vh; font-family:Arial; overflow:hidden; }
@@ -16,7 +16,7 @@
     .location-btn { background:#444; color:white; border:2px solid #888; padding:8px 18px; border-radius:12px; margin:4px; cursor:pointer; transition:0.2s; }
     .location-btn.selected { border-color:#ffcc00; background:#ff6600; }
     #gameContainer { position:relative; display:none; }
-    canvas { display:block; border:2px solid #fff; background:#87CEEB; pointer-events: auto; z-index: 1; }
+    canvas { display:block; border:2px solid #fff; background:#87CEEB; }
     #info { position:absolute; bottom:10px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:14px; }
     #score { position:absolute; top:10px; right:10px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:20px; font-weight:bold; }
     #speed { position:absolute; top:10px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:18px; }
@@ -144,10 +144,7 @@
   let engineGain = null;
 
   function initAudio() {
-    if (audioCtx) {
-      audioCtx.resume();
-      return;
-    }
+    if (audioCtx) { audioCtx.resume(); return; }
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
@@ -193,23 +190,10 @@
   window.addEventListener('keydown', () => { initAudio(); }, { once: true });
 
   // ====== ПУЛЫ ОБЪЕКТОВ ======
-  function getEnemyFromPool() {
-    let enemy = enemyPool.pop();
-    if (!enemy) enemy = {};
-    return enemy;
-  }
-  function releaseEnemyToPool(enemy) {
-    if (enemyPool.length < 30) enemyPool.push(enemy);
-  }
-
-  function getParticleFromPool() {
-    let p = particlePool.pop();
-    if (!p) p = {};
-    return p;
-  }
-  function releaseParticleToPool(p) {
-    if (particlePool.length < MAX_PARTICLES) particlePool.push(p);
-  }
+  function getEnemyFromPool() { return enemyPool.pop() || {}; }
+  function releaseEnemyToPool(enemy) { if (enemyPool.length < 30) enemyPool.push(enemy); }
+  function getParticleFromPool() { return particlePool.pop() || {}; }
+  function releaseParticleToPool(p) { if (particlePool.length < MAX_PARTICLES) particlePool.push(p); }
 
   // ====== ГЕНЕРАЦИЯ ОБЪЕКТОВ ======
   function spawnEnemy(yPos = -100) {
@@ -246,8 +230,7 @@
     for (let i=0; i<count; i++) {
       const p = getParticleFromPool();
       p.x = x; p.y = y;
-      p.vx = (Math.random()-0.5)*10;
-      p.vy = (Math.random()-0.5)*10 - 2;
+      p.vx = (Math.random()-0.5)*10; p.vy = (Math.random()-0.5)*10 - 2;
       p.size = 3 + Math.random()*5;
       p.color = color || `hsl(${Math.random()*60+20},80%,60%)`;
       p.life = 1;
@@ -275,40 +258,35 @@
     if (!player.alive) return;
     const pRect = { x: player.x - player.w/2, y: player.y - player.h/2, w: player.w, h: player.h };
 
-    // Бонусы
     for (let i = bonuses.length-1; i >= 0; i--) {
       const b = bonuses[i];
-      const bRect = { x: b.x - b.w/2, y: b.y - b.h/2, w: b.w, h: b.h };
-      if (rectCollide(pRect, bRect)) {
+      if (rectCollide(pRect, { x: b.x - b.w/2, y: b.y - b.h/2, w: b.w, h: b.h })) {
         if (b.type === 'shield') { player.shield = true; setTimeout(() => { player.shield = false; }, 8000); }
         else if (b.type === 'boost') { player.targetSpeed = 8; setTimeout(() => { player.targetSpeed = 4; }, 6000); }
         else if (b.type === 'repair') { player.repair = true; setTimeout(() => { player.repair = false; }, 10000); }
-        bonuses.splice(i, 1);
+        bonuses.splice(i,1);
         playSound(500, 'sine', 0.15, 0.3);
         showAchievement(b.type === 'shield' ? '🛡️ Щит!' : b.type === 'boost' ? '🚀 Ускорение!' : '🔧 Ремонт!');
       }
     }
 
-    // Враги
     for (let i = enemies.length-1; i >= 0; i--) {
       const enemy = enemies[i];
       if (enemy.timer > 0) continue;
-      const eRect = { x: enemy.x - enemy.w/2, y: enemy.y - enemy.h/2, w: enemy.w, h: enemy.h };
-      if (rectCollide(pRect, eRect)) {
+      if (rectCollide(pRect, { x: enemy.x - enemy.w/2, y: enemy.y - enemy.h/2, w: enemy.w, h: enemy.h })) {
         if (player.shield) {
           createParticles(enemy.x, enemy.y, 10, '#00ff00');
-          enemies.splice(i, 1);
+          enemies.splice(i,1);
           releaseEnemyToPool(enemy);
           continue;
         }
         if (player.repair) {
           player.repair = false;
           createParticles(enemy.x, enemy.y, 10, '#ff0000');
-          enemies.splice(i, 1);
+          enemies.splice(i,1);
           releaseEnemyToPool(enemy);
           continue;
         }
-
         if (enemy.type === 'cow') {
           enemy.type = 'steak'; enemy.timer = 60; enemy.speed = 0;
           player.alive = false; gameOverTimer = 45;
@@ -332,10 +310,8 @@
       }
     }
 
-    // Дома
     for (let house of houses) {
-      const hRect = { x: house.x - house.w/2, y: house.y - house.h/2, w: house.w, h: house.h };
-      if (rectCollide(pRect, hRect)) {
+      if (rectCollide(pRect, { x: house.x - house.w/2, y: house.y - house.h/2, w: house.w, h: house.h })) {
         player.alive = false;
         gameoverDiv.classList.add('show');
         createParticles(player.x, player.y, 15);
@@ -347,7 +323,6 @@
       }
     }
 
-    // Пули
     for (let i=bullets.length-1; i>=0; i--) {
       const b = bullets[i];
       const bRect = { x: b.x - b.w/2, y: b.y - b.h/2, w: b.w, h: b.h };
@@ -355,8 +330,7 @@
       for (let j=enemies.length-1; j>=0; j--) {
         const e = enemies[j];
         if (e.type === 'steak' || e.type === 'hay') continue;
-        const eRect = { x: e.x - e.w/2, y: e.y - e.h/2, w: e.w, h: e.h };
-        if (rectCollide(bRect, eRect)) {
+        if (rectCollide(bRect, { x: e.x - e.w/2, y: e.y - e.h/2, w: e.w, h: e.h })) {
           enemies.splice(j,1);
           releaseEnemyToPool(e);
           bullets.splice(i,1);
@@ -382,24 +356,18 @@
     menuCannon.textContent = totalDistance >= 20000 ? '🔫 ГОТОВО' : `🔫 ${progress}/20 км`;
   }
 
-  // Время суток
   function getTimeOfDay() {
     const set = locSettings[currentLocation];
     if (!set.timeChange) return set.fixedTime || 'day';
     const km = totalDistance / 1000;
-    if (km < 5) return 'day';
-    if (km < 10) return 'night';
-    if (km < 11.5) return 'morning';
-    if (km < 13) return 'day';
+    if (km < 5) return 'day'; if (km < 10) return 'night';
+    if (km < 11.5) return 'morning'; if (km < 13) return 'day';
     if (km < 14.5) return 'evening';
     let cycle = (km - 14.5) % 9.5;
-    if (cycle < 5) return 'night';
-    if (cycle < 6.5) return 'morning';
-    if (cycle < 8) return 'day';
-    return 'evening';
+    if (cycle < 5) return 'night'; if (cycle < 6.5) return 'morning';
+    if (cycle < 8) return 'day'; return 'evening';
   }
 
-  // Локации
   const locSettings = {
     'Обычная': { enemyTypes: ['car'], house: true, deco: ['tree','lamp'], baseSpeed: 4, spawnInterval: 110, houseInterval: 480, bonusInterval: 800, timeChange: true },
     'Поле': { enemyTypes: ['tractor','combine'], house: false, deco: ['wheat','oat'], baseSpeed: 2.5, spawnInterval: 160, bonusInterval: 1000, timeChange: false },
@@ -411,23 +379,16 @@
   function update(dt) {
     const frameDt = Math.min(0.05, dt);
     if (!player.alive) {
-      if (gameOverTimer > 0) {
-        gameOverTimer--;
-        moveWorld(frameDt);
-        updateParticles(frameDt);
-        if (gameOverTimer <= 0) gameoverDiv.classList.add('show');
-      }
+      if (gameOverTimer > 0) { gameOverTimer--; moveWorld(frameDt); updateParticles(frameDt); if (gameOverTimer <= 0) gameoverDiv.classList.add('show'); }
       return;
     }
 
-    // Управление скоростью
     player.targetSpeed = 4;
     if (keys['ArrowUp']) player.targetSpeed = 6.5;
     if (keys['ArrowDown']) player.targetSpeed = 2;
     player.speed += (player.targetSpeed - player.speed) * Math.min(1, frameDt * 4);
     if (Math.abs(player.speed - player.targetSpeed) < 0.05) player.speed = player.targetSpeed;
 
-    // Звук двигателя
     updateEngineSound(player.speed);
 
     let turnAmount = 0;
@@ -445,52 +406,31 @@
     distance += scrollSpeed * 0.5;
     totalDistance += scrollSpeed * 0.5;
 
-    if (Math.floor(totalDistance / 200) > Math.floor((totalDistance - scrollSpeed * 0.5) / 200)) {
-      saveTotalDistance();
-    }
+    if (Math.floor(totalDistance / 200) > Math.floor((totalDistance - scrollSpeed * 0.5) / 200)) saveTotalDistance();
 
     document.getElementById('score').textContent = Math.floor(distance) + ' м';
-    const speedKmh = Math.floor(player.speed * 60 * 3.6 / 10);
-    speedDisplay.textContent = speedKmh + ' км/ч';
+    speedDisplay.textContent = Math.floor(player.speed * 60 * 3.6 / 10) + ' км/ч';
 
-    // Пушка и кулдаун
     player.cannonUnlocked = totalDistance >= 20000;
     cannonProgress.textContent = player.cannonUnlocked ? '🔫 ГОТОВО' : `🔫 ${Math.min(totalDistance/1000, 20).toFixed(1)}/20 км`;
     if (player.shootCooldown > 0) {
       player.shootCooldown--;
       cooldownBar.style.width = ((player.maxShootCooldown - player.shootCooldown) / player.maxShootCooldown * 100) + '%';
-    } else {
-      cooldownBar.style.width = '100%';
-    }
+    } else cooldownBar.style.width = '100%';
 
-    // Спавн
     enemyBaseSpeed = locSettings[currentLocation].baseSpeed * (1 + Math.floor(totalDistance/500)*0.1);
     const set = locSettings[currentLocation];
-    if (totalDistance - lastSpawnDist > set.spawnInterval) {
-      spawnEnemy();
-      lastSpawnDist = totalDistance;
-    }
-    if (set.house && totalDistance - lastHouseDist > set.houseInterval) {
-      spawnHouse();
-      lastHouseDist = totalDistance;
-    }
-    if (totalDistance - lastBonusDist > set.bonusInterval) {
-      spawnBonus();
-      lastBonusDist = totalDistance;
-    }
+    if (totalDistance - lastSpawnDist > set.spawnInterval) { spawnEnemy(); lastSpawnDist = totalDistance; }
+    if (set.house && totalDistance - lastHouseDist > set.houseInterval) { spawnHouse(); lastHouseDist = totalDistance; }
+    if (totalDistance - lastBonusDist > set.bonusInterval) { spawnBonus(); lastBonusDist = totalDistance; }
 
     moveWorld(frameDt);
 
-    // Время суток
     const tod = getTimeOfDay();
     timeDisplay.textContent = {day:'День', night:'Ночь', morning:'Утро', evening:'Вечер', sunset:'Закат'}[tod] || 'День';
     timeBar.style.width = ((totalDistance % 1000) / 10) + '%';
 
-    if (distance > recordDistance) {
-      recordDistance = Math.floor(distance);
-      localStorage.setItem('roadRecord', recordDistance);
-      menuRecord.textContent = recordDistance;
-    }
+    if (distance > recordDistance) { recordDistance = Math.floor(distance); localStorage.setItem('roadRecord', recordDistance); menuRecord.textContent = recordDistance; }
     recordDisplay.textContent = '🏆 ' + recordDistance + ' м';
 
     const blur = Math.min(2, (player.speed - 4) * 0.7);
@@ -500,12 +440,10 @@
   }
 
   function moveWorld(dt) {
-    for (let enemy of enemies) {
-      if (enemy.timer > 0) { enemy.timer--; if (enemy.timer <= 0) { enemies.splice(enemies.indexOf(enemy), 1); releaseEnemyToPool(enemy); } }
-      else {
-        enemy.y += enemy.speed * dt * 60;
-        if (enemy.y > H + 150) { enemies.splice(enemies.indexOf(enemy), 1); releaseEnemyToPool(enemy); }
-      }
+    for (let i=enemies.length-1; i>=0; i--) {
+      const e = enemies[i];
+      if (e.timer > 0) { e.timer--; if (e.timer <= 0) { enemies.splice(i,1); releaseEnemyToPool(e); } }
+      else { e.y += e.speed * dt * 60; if (e.y > H+150) { enemies.splice(i,1); releaseEnemyToPool(e); } }
     }
     for (let house of houses) house.y += player.speed * dt * 60;
     houses = houses.filter(h => h.y < H + 200);
@@ -518,14 +456,9 @@
   function updateParticles(dt) {
     for (let i=particles.length-1; i>=0; i--) {
       const p = particles[i];
-      p.x += p.vx * dt * 60;
-      p.y += p.vy * dt * 60;
-      p.vy += 0.3 * dt * 60;
-      p.life -= 0.02 * dt * 60;
-      if (p.life <= 0) {
-        particles.splice(i,1);
-        releaseParticleToPool(p);
-      }
+      p.x += p.vx * dt * 60; p.y += p.vy * dt * 60;
+      p.vy += 0.3 * dt * 60; p.life -= 0.02 * dt * 60;
+      if (p.life <= 0) { particles.splice(i,1); releaseParticleToPool(p); }
     }
   }
 
@@ -589,19 +522,9 @@
   function drawBonus(bonus) {
     const { x, y, type } = bonus;
     ctx.save(); ctx.translate(x, y);
-    if (type === 'shield') {
-      ctx.fillStyle = '#00ff00';
-      ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = 'white'; ctx.font = '16px Arial'; ctx.fillText('🛡️', -8, 6);
-    } else if (type === 'boost') {
-      ctx.fillStyle = '#ffff00';
-      ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = 'black'; ctx.font = '16px Arial'; ctx.fillText('🚀', -8, 6);
-    } else if (type === 'repair') {
-      ctx.fillStyle = '#ff0000';
-      ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = 'white'; ctx.font = '16px Arial'; ctx.fillText('🔧', -8, 6);
-    }
+    if (type === 'shield') { ctx.fillStyle = '#00ff00'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle = 'white'; ctx.font = '16px Arial'; ctx.fillText('🛡️', -8, 6); }
+    else if (type === 'boost') { ctx.fillStyle = '#ffff00'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle = 'black'; ctx.font = '16px Arial'; ctx.fillText('🚀', -8, 6); }
+    else if (type === 'repair') { ctx.fillStyle = '#ff0000'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle = 'white'; ctx.font = '16px Arial'; ctx.fillText('🔧', -8, 6); }
     ctx.restore();
   }
 
@@ -625,7 +548,7 @@
     ctx.fillStyle = road; ctx.fillRect(20,0,W-40,H);
     ctx.strokeStyle = '#fff'; ctx.lineWidth=2;
     for (let i=0; i<lanes.length-1; i++) {
-      const x = (lanes[i]+lanes[i+1])/2;
+      let x = (lanes[i]+lanes[i+1])/2;
       for (let y=-roadOffset; y<H; y+=50) { ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+30); ctx.stroke(); }
     }
     ctx.strokeStyle = '#fff'; ctx.lineWidth=3;
@@ -671,8 +594,7 @@
     gameoverDiv.classList.remove('show');
     gameOverTimer = 0;
     player.cannonUnlocked = totalDistance >= 20000;
-    roadOffset = 0;
-    canvas.style.filter = '';
+    roadOffset = 0; canvas.style.filter = '';
     player.shield = false; player.boost = false; player.repair = false;
     for (let i=0; i<2; i++) spawnEnemy(-i*200);
     startEngineSound();
@@ -700,43 +622,63 @@
   document.querySelectorAll('#skinContainer .skin-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#skinContainer .skin-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      playerColor1 = btn.dataset.color;
+      btn.classList.add('selected'); playerColor1 = btn.dataset.color;
     });
   });
   document.querySelectorAll('#skinContainer2 .skin-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#skinContainer2 .skin-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      playerColor2 = btn.dataset.color2;
+      btn.classList.add('selected'); playerColor2 = btn.dataset.color2;
     });
   });
   document.querySelectorAll('.location-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      currentLocation = btn.dataset.loc;
+      btn.classList.add('selected'); currentLocation = btn.dataset.loc;
     });
   });
   document.getElementById('playBtn').addEventListener('click', startGame);
   menuBtn.addEventListener('click', goToMenu);
   window.addEventListener('keydown', e => { if (e.key === 'Escape' && gameRunning) goToMenu(); });
 
-  // Ввод движения и стрельбы
   const keys = {};
   window.addEventListener('keydown', e => {
     keys[e.key] = true;
     e.preventDefault();
     if (e.key === ' ' && gameRunning && player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
-      shootBullet();
-      player.shootCooldown = player.maxShootCooldown;
+      shootBullet(); player.shootCooldown = player.maxShootCooldown;
     }
     if (e.key === 'Escape' && gameRunning) goToMenu();
   });
   window.addEventListener('keyup', e => { keys[e.key] = false; e.preventDefault(); });
+
+  // === ИСПРАВЛЕНИЕ: СЛУШАЕМ КЛИКИ ПО ВСЕМУ ДОКУМЕНТУ, НО ФИЛЬТРУЕМ ТОЛЬКО ПО canvas ===
+  document.addEventListener('click', (e) => {
+    // Игнорируем клики, пока не в игре
+    if (!gameRunning || !player.alive) return;
+    
+    // Берем координаты canvas и проверяем, попал ли клик в его область
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Если клик внутри canvas
+    if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+      if (player.cannonUnlocked && player.shootCooldown <= 0) {
+        shootBullet();
+        player.shootCooldown = player.maxShootCooldown;
+      }
+      // Если игрок мёртв и таймер истёк – перезапуск (уже обрабатывается отдельно)
+      if (!player.alive && gameOverTimer <= 0) {
+        resetGame();
+      }
+    }
+  });
+
+  // Дополнительно: слушаем клики на canvas для обратной совместимости
   canvas.addEventListener('click', () => {
-    if (!player.alive && gameOverTimer <= 0) resetGame();
-    else if (player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
+    if (!gameRunning || !player.alive) return;
+    if (player.cannonUnlocked && player.shootCooldown <= 0) {
       shootBullet();
       player.shootCooldown = player.maxShootCooldown;
     }
@@ -760,7 +702,6 @@
     };
   }
 
-  // Запуск игрового цикла
   requestAnimationFrame(gameLoop);
 </script>
 </body>
