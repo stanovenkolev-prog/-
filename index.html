@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Безумная дорога – Режимы скорости</title>
+  <title>Безумная дорога</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#111; display:flex; justify-content:center; align-items:center; height:100vh; font-family:Arial; overflow:hidden; }
-    #menu { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.9); color:white; padding:25px; border-radius:20px; text-align:center; z-index:10; min-width:340px; }
-    #menu h1 { font-size:34px; margin-bottom:20px; color:#ffcc00; text-shadow:0 0 10px #ff8800; }
+    #menu { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.9); color:white; padding:25px; border-radius:20px; text-align:center; z-index:10; min-width:350px; }
+    #menu h1 { font-size:34px; margin-bottom:20px; color:#ffcc00; }
     .btn { background:#ff6600; color:white; border:none; padding:12px 30px; border-radius:30px; font-size:18px; cursor:pointer; margin:6px; transition:0.2s; box-shadow:0 4px 10px rgba(255,100,0,0.5); }
     .btn:hover { background:#ff8800; transform:scale(1.05); }
     .skin-btn { width:40px; height:40px; border-radius:50%; border:3px solid white; margin:5px; cursor:pointer; display:inline-block; transition:0.2s; }
@@ -24,10 +24,9 @@
     #gameover.show { display:block; opacity:1; }
     #timeDisplay { position:absolute; top:40px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:3px 10px; border-radius:8px; font-size:14px; }
     #cannonProgress { position:absolute; top:70px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:3px 10px; border-radius:8px; font-size:14px; }
-    #cooldownBar { position:absolute; top:95px; left:10px; height:4px; background:#ffaa00; transition:width 0.1s; width:0%; border-radius:2px; }
-    #timeBar { position:absolute; bottom:0; left:0; height:4px; background:#ffaa00; transition:width 0.2s; }
+    #cooldownBar { position:absolute; top:95px; left:10px; height:4px; background:#ffaa00; width:0%; border-radius:2px; }
+    #timeBar { position:absolute; bottom:0; left:0; height:4px; background:#ffaa00; }
     #record { position:absolute; top:10px; left:50%; transform:translateX(-50%); color:#ffcc00; background:rgba(0,0,0,0.7); padding:3px 12px; border-radius:8px; font-size:16px; }
-    #achievement { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#ffcc00; background:rgba(0,0,0,0.9); padding:10px 20px; border-radius:12px; font-size:18px; opacity:0; transition:opacity 0.5s; pointer-events:none; }
   </style>
 </head>
 <body>
@@ -46,17 +45,13 @@
     <button class="speed-btn selected" data-mode="normal">🚗 Обычная</button>
     <button class="speed-btn" data-mode="fast">🚀 Быстрая</button>
   </div>
-  <p>Цвет машины (основной):</p>
+  <p>Цвет машины:</p>
   <div id="skinContainer">
     <span class="skin-btn selected" data-color="#ff4444" style="background:#ff4444;"></span>
     <span class="skin-btn" data-color="#44aaff" style="background:#44aaff;"></span>
     <span class="skin-btn" data-color="#44ff44" style="background:#44ff44;"></span>
     <span class="skin-btn" data-color="#ffaa00" style="background:#ffaa00;"></span>
     <span class="skin-btn" data-color="#ff44ff" style="background:#ff44ff;"></span>
-    <span class="skin-btn" data-color="#ff8800" style="background:#ff8800;"></span>
-    <span class="skin-btn" data-color="#ff00ff" style="background:#ff00ff;"></span>
-    <span class="skin-btn" data-color="#00ffff" style="background:#00ffff;"></span>
-    <span class="skin-btn" data-color="#ffff00" style="background:#ffff00;"></span>
     <span class="skin-btn" data-color="#ffffff" style="background:#ffffff;"></span>
   </div>
   <p>Полоса:</p>
@@ -66,13 +61,9 @@
     <span class="skin-btn" data-color2="#ffff00" style="background:#ffff00;"></span>
     <span class="skin-btn" data-color2="#00ffff" style="background:#00ffff;"></span>
     <span class="skin-btn" data-color2="#ff4444" style="background:#ff4444;"></span>
-    <span class="skin-btn" data-color2="#44ff44" style="background:#44ff44;"></span>
-    <span class="skin-btn" data-color2="#ff00ff" style="background:#ff00ff;"></span>
-    <span class="skin-btn" data-color2="#ff8800" style="background:#ff8800;"></span>
   </div>
   <button class="btn" id="playBtn">▶ ИГРАТЬ</button>
-  <div style="margin-top:10px;font-size:14px;">Рекорд: <span id="menuRecord">0</span> м</div>
-  <div style="margin-top:8px;font-size:14px;">Пушка: <span id="menuCannon">🔫 0/20 км</span></div>
+  <div style="margin-top:10px;">Рекорд: <span id="menuRecord">0</span> м | Пушка: <span id="menuCannon">🔫 0/20 км</span></div>
 </div>
 <div id="gameContainer">
   <canvas id="game" width="400" height="600"></canvas>
@@ -83,18 +74,15 @@
   <div id="cooldownBar"></div>
   <div id="record">🏆 0 м</div>
   <div id="timeBar"></div>
-  <div id="achievement"></div>
   <div id="info">⬅➡ — руль | ⬆ — газ | ⬇ — тормоз | ПРОБЕЛ/КЛИК — стрельба | ESC — меню</div>
   <div id="gameover">АВАРИЯ!<br>ПРОБЕЛ или КЛИК — заново</div>
 </div>
 
 <script>
-  // ====== ОСНОВНЫЕ ПЕРЕМЕННЫЕ ======
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
-  // DOM-элементы
   const menuDiv = document.getElementById('menu');
   const gameContainer = document.getElementById('gameContainer');
   const gameoverDiv = document.getElementById('gameover');
@@ -106,631 +94,348 @@
   const menuRecord = document.getElementById('menuRecord');
   const menuCannon = document.getElementById('menuCannon');
   const timeBar = document.getElementById('timeBar');
-  const achievementDiv = document.getElementById('achievement');
+  const achievementDiv = document.createElement('div'); // не используется активно, но оставлен
 
-  // Состояние игры
   let gameRunning = false;
-  let playerColor1 = '#ff4444';
-  let playerColor2 = '#ffffff';
-  let currentLocation = 'Обычная';
-  let currentSpeedMode = 'normal'; // 'slow', 'normal', 'fast'
+  let playerColor1 = '#ff4444', playerColor2 = '#ffffff';
+  let currentLocation = 'Обычная', currentSpeedMode = 'normal';
   let recordDistance = parseInt(localStorage.getItem('roadRecord')) || 0;
   let totalDistance = parseFloat(localStorage.getItem('roadTotalDistance')) || 0;
   let distance = 0;
   menuRecord.textContent = recordDistance;
   updateMenuCannon();
 
-  // Полосы
   const lanes = [60, 120, 180, 240, 300, 350];
   let roadOffset = 0;
-  let enemies = [];
-  let houses = [];
-  let bullets = [];
-  let bonuses = [];
-  let particles = [];
-  const particlePool = [];
-  const MAX_PARTICLES = 50;
-  let enemyPool = [];
+  let enemies = [], houses = [], bullets = [], bonuses = [], particles = [];
+  let enemyBaseSpeed = 4, gameOverTimer = 0, enemiesDestroyed = 0;
+  let lastSpawnDist = 0, lastHouseDist = 0, lastBonusDist = 0;
 
-  let lastSpawnDist = 0;
-  let lastHouseDist = 0;
-  let lastBonusDist = 0;
-  let enemyBaseSpeed = 4;
-  let gameOverTimer = 0;
-  let enemiesDestroyed = 0;
-
-  // Игрок
   const player = {
-    x: W/2, y: H - 100,
-    w: 40, h: 70,
-    speed: 4, targetSpeed: 4,
-    vx: 0, alive: true,
-    cannonUnlocked: false,
-    shootCooldown: 0, maxShootCooldown: 15,
-    shield: false, boost: false, repair: false,
-    drift: 0
+    x: W/2, y: H - 100, w: 40, h: 70,
+    speed: 4, targetSpeed: 4, vx: 0, alive: true,
+    cannonUnlocked: false, shootCooldown: 0, maxShootCooldown: 15,
+    shield: false, boost: false, repair: false, drift: 0
   };
 
-  // ====== РЕЖИМЫ СКОРОСТИ ======
   const speedModes = {
-    slow: { name: 'Медленная', playerBase: 2, playerBoost: 3, enemyCoeff: 0.5 },
-    normal: { name: 'Обычная', playerBase: 4, playerBoost: 6.5, enemyCoeff: 1 },
-    fast: { name: 'Быстрая', playerBase: 6, playerBoost: 9, enemyCoeff: 1.5 }
+    slow: { name:'Медленная', playerBase:2, playerBoost:3, enemyCoeff:0.5 },
+    normal: { name:'Обычная', playerBase:4, playerBoost:6.5, enemyCoeff:1 },
+    fast: { name:'Быстрая', playerBase:6, playerBoost:9, enemyCoeff:1.5 }
   };
+  function getMode() { return speedModes[currentSpeedMode]; }
 
-  function getSpeedModeConfig() {
-    return speedModes[currentSpeedMode] || speedModes.normal;
-  }
-
-  // ====== ЗВУК ======
-  let audioCtx = null;
-  let engineOsc = null;
-  let engineGain = null;
-
-  function initAudio() {
-    if (audioCtx) { audioCtx.resume(); return; }
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-
-  function startEngineSound() {
+  // Звук
+  let audioCtx=null, engineOsc=null, engineGain=null;
+  function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); else audioCtx.resume(); }
+  function startEngine() {
     if (!audioCtx) return;
     if (engineOsc) engineOsc.stop();
     engineOsc = audioCtx.createOscillator();
     engineGain = audioCtx.createGain();
-    engineOsc.type = 'sawtooth';
-    engineOsc.frequency.value = 80;
-    engineGain.gain.value = 0.06;
-    engineOsc.connect(engineGain);
-    engineGain.connect(audioCtx.destination);
-    engineOsc.start();
+    engineOsc.type='sawtooth'; engineOsc.frequency.value=80; engineGain.gain.value=0.06;
+    engineOsc.connect(engineGain); engineGain.connect(audioCtx.destination); engineOsc.start();
   }
-
-  function stopEngineSound() {
-    if (engineOsc) { engineOsc.stop(); engineOsc = null; engineGain = null; }
+  function stopEngine() { if (engineOsc) { engineOsc.stop(); engineOsc=null; engineGain=null; } }
+  function updateEngine(speed) {
+    if (!engineOsc) return;
+    engineOsc.frequency.setTargetAtTime(55+speed*12, audioCtx.currentTime, 0.1);
+    engineGain.gain.setTargetAtTime(Math.min(0.1, speed*0.02), audioCtx.currentTime, 0.1);
   }
-
-  function updateEngineSound(speed) {
-    if (!engineOsc || !engineGain) return;
-    const freq = 55 + speed * 12;
-    const vol = Math.min(0.1, speed * 0.02);
-    engineOsc.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
-    engineGain.gain.setTargetAtTime(vol, audioCtx.currentTime, 0.1);
-  }
-
-  function playSound(freq, type, duration, vol = 0.1) {
+  function playSound(freq, type, dur, vol=0.1) {
     if (!audioCtx) return;
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type; osc.frequency.value = freq;
-    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + duration);
+    if (audioCtx.state==='suspended') audioCtx.resume();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+dur);
+    o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
   }
+  window.addEventListener('click', initAudio, {once:true});
+  window.addEventListener('keydown', initAudio, {once:true});
 
-  // Активация звука при первом клике/нажатии
-  window.addEventListener('click', initAudio, { once: true });
-  window.addEventListener('keydown', initAudio, { once: true });
-
-  // ====== ПУЛЫ ОБЪЕКТОВ ======
-  function getEnemyFromPool() { return enemyPool.pop() || {}; }
-  function releaseEnemyToPool(enemy) { if (enemyPool.length < 30) enemyPool.push(enemy); }
-  function getParticleFromPool() { return particlePool.pop() || {}; }
-  function releaseParticleToPool(p) { if (particlePool.length < MAX_PARTICLES) particlePool.push(p); }
-
-  // ====== ГЕНЕРАЦИЯ ОБЪЕКТОВ ======
-  function spawnEnemy(yPos = -100) {
+  // Пулы
+  function spawnEnemy(yPos=-100) {
     const set = locSettings[currentLocation];
     const lane = lanes[Math.floor(Math.random() * lanes.length)];
     const type = set.enemyTypes[Math.floor(Math.random() * set.enemyTypes.length)];
-    let w, h, spd;
-    const enemyCoeff = getSpeedModeConfig().enemyCoeff;
+    const coeff = getMode().enemyCoeff;
+    let w,h,s;
     switch(type) {
-      case 'car': w=40; h=70; spd = enemyBaseSpeed * enemyCoeff; break;
-      case 'tractor': w=50; h=80; spd = enemyBaseSpeed * 0.8 * enemyCoeff; break;
-      case 'combine': w=60; h=100; spd = enemyBaseSpeed * 0.6 * enemyCoeff; break;
-      case 'horse': w=40; h=70; spd = enemyBaseSpeed * 1.3 * enemyCoeff; break;
-      case 'cow': w=50; h=75; spd = enemyBaseSpeed * 0.9 * enemyCoeff; break;
-      default: w=40; h=70; spd = enemyBaseSpeed * enemyCoeff;
+      case 'car': w=40; h=70; s=enemyBaseSpeed*coeff; break;
+      case 'tractor': w=50; h=80; s=enemyBaseSpeed*0.8*coeff; break;
+      case 'combine': w=60; h=100; s=enemyBaseSpeed*0.6*coeff; break;
+      case 'horse': w=40; h=70; s=enemyBaseSpeed*1.3*coeff; break;
+      case 'cow': w=50; h=75; s=enemyBaseSpeed*0.9*coeff; break;
+      default: w=40; h=70; s=enemyBaseSpeed*coeff;
     }
-    const enemy = getEnemyFromPool();
-    Object.assign(enemy, { x: lane, y: yPos, w, h, speed: spd, type, lane, color: type==='car'? `hsl(${Math.random()*360},70%,50%)` : null, timer: 0 });
-    enemies.push(enemy);
+    enemies.push({ x:lane, y:yPos, w, h, speed:s, type, lane, color:type==='car'?`hsl(${Math.random()*360},70%,50%)`:null, timer:0 });
   }
-
-  function spawnHouse(yPos = -100) {
+  function spawnHouse(yPos=-100) {
     if (!locSettings[currentLocation].house) return;
-    houses.push({ x: lanes[Math.floor(Math.random() * lanes.length)], y: yPos, w: 50, h: 60 });
+    houses.push({ x:lanes[Math.floor(Math.random()*lanes.length)], y:yPos, w:50, h:60 });
   }
-
-  function spawnBonus(yPos = -100) {
-    const types = ['shield', 'boost', 'repair'];
-    const type = types[Math.floor(Math.random() * types.length)];
-    const x = lanes[Math.floor(Math.random() * lanes.length)];
-    bonuses.push({ x, y: yPos, w: 30, h: 30, type });
+  function spawnBonus(yPos=-100) {
+    const t = ['shield','boost','repair'][Math.floor(Math.random()*3)];
+    bonuses.push({ x:lanes[Math.floor(Math.random()*lanes.length)], y:yPos, w:30, h:30, type:t });
   }
-
-  function createParticles(x, y, count, color = null) {
-    for (let i=0; i<count; i++) {
-      const p = getParticleFromPool();
-      p.x = x; p.y = y;
-      p.vx = (Math.random()-0.5)*10; p.vy = (Math.random()-0.5)*10 - 2;
-      p.size = 3 + Math.random()*5;
-      p.color = color || `hsl(${Math.random()*60+20},80%,60%)`;
-      p.life = 1;
-      particles.push(p);
+  function createParticles(x,y,count,color=null) {
+    for (let i=0;i<count;i++) {
+      particles.push({ x,y, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10-2, size:3+Math.random()*5, color:color||`hsl(${Math.random()*60+20},80%,60%)`, life:1 });
     }
   }
+  function shootBullet() { bullets.push({ x:player.x, y:player.y-30, w:6, h:16, speed:12 }); playSound(800,'square',0.1,0.2); }
 
-  function shootBullet() {
-    bullets.push({ x: player.x, y: player.y-30, w:6, h:16, speed:12 });
-    playSound(800, 'square', 0.1, 0.2);
-  }
-
-  // ====== СТОЛКНОВЕНИЯ ======
-  function rectCollide(r1, r2) {
-    return !(r1.x + r1.w < r2.x || r1.x > r2.x + r2.w || r1.y + r1.h < r2.y || r1.y > r2.y + r2.h);
-  }
-
-  function showAchievement(text) {
-    achievementDiv.textContent = text;
-    achievementDiv.style.opacity = '1';
-    setTimeout(() => { achievementDiv.style.opacity = '0'; }, 2000);
-  }
+  function rect(r1,r2) { return !(r1.x+r1.w<r2.x || r1.x>r2.x+r2.w || r1.y+r1.h<r2.y || r1.y>r2.y+r2.h); }
 
   function checkCollisions() {
     if (!player.alive) return;
-    const pRect = { x: player.x - player.w/2, y: player.y - player.h/2, w: player.w, h: player.h };
-
-    for (let i = bonuses.length-1; i >= 0; i--) {
-      const b = bonuses[i];
-      if (rectCollide(pRect, { x: b.x - b.w/2, y: b.y - b.h/2, w: b.w, h: b.h })) {
-        if (b.type === 'shield') { player.shield = true; setTimeout(() => { player.shield = false; }, 8000); }
-        else if (b.type === 'boost') { player.targetSpeed = 8; setTimeout(() => { player.targetSpeed = 4; }, 6000); }
-        else if (b.type === 'repair') { player.repair = true; setTimeout(() => { player.repair = false; }, 10000); }
-        bonuses.splice(i,1);
-        playSound(500, 'sine', 0.15, 0.3);
-        showAchievement(b.type === 'shield' ? '🛡️ Щит!' : b.type === 'boost' ? '🚀 Ускорение!' : '🔧 Ремонт!');
+    const p = { x:player.x-player.w/2, y:player.y-player.h/2, w:player.w, h:player.h };
+    for (let i=bonuses.length-1;i>=0;i--) {
+      const b = bonuses[i], r={ x:b.x-b.w/2, y:b.y-b.h/2, w:b.w, h:b.h };
+      if (rect(p,r)) {
+        if (b.type==='shield') { player.shield=true; setTimeout(()=>{player.shield=false;},8000); }
+        else if (b.type==='boost') { player.targetSpeed=8; setTimeout(()=>{player.targetSpeed=4;},6000); }
+        else if (b.type==='repair') { player.repair=true; setTimeout(()=>{player.repair=false;},10000); }
+        bonuses.splice(i,1); playSound(500,'sine',0.15,0.3);
       }
     }
-
-    for (let i = enemies.length-1; i >= 0; i--) {
-      const enemy = enemies[i];
-      if (enemy.timer > 0) continue;
-      if (rectCollide(pRect, { x: enemy.x - enemy.w/2, y: enemy.y - enemy.h/2, w: enemy.w, h: enemy.h })) {
-        if (player.shield) {
-          createParticles(enemy.x, enemy.y, 10, '#00ff00');
-          enemies.splice(i,1);
-          releaseEnemyToPool(enemy);
-          continue;
-        }
-        if (player.repair) {
-          player.repair = false;
-          createParticles(enemy.x, enemy.y, 10, '#ff0000');
-          enemies.splice(i,1);
-          releaseEnemyToPool(enemy);
-          continue;
-        }
-        if (enemy.type === 'cow') {
-          enemy.type = 'steak'; enemy.timer = 60; enemy.speed = 0;
-          player.alive = false; gameOverTimer = 45;
-          createParticles(enemy.x, enemy.y, 10, '#8B4513');
-          playSound(200, 'triangle', 0.3, 0.3);
-        } else if (enemy.type === 'horse') {
-          enemy.type = 'hay'; enemy.timer = 60; enemy.speed = 0;
-          player.alive = false; gameOverTimer = 45;
-          createParticles(enemy.x, enemy.y, 10, '#DAA520');
-          playSound(300, 'sine', 0.2, 0.4);
-        } else {
-          player.alive = false;
-          gameOverTimer = 45;
-          gameoverDiv.classList.add('show');
-          createParticles(player.x, player.y, 15);
-          playSound(100, 'sawtooth', 0.2, 0.5);
-          canvas.style.filter = 'brightness(2)';
-          setTimeout(() => canvas.style.filter = '', 100);
-        }
-        saveTotalDistance();
-        return;
+    for (let i=enemies.length-1;i>=0;i--) {
+      const e = enemies[i]; if (e.timer>0) continue;
+      if (rect(p, { x:e.x-e.w/2, y:e.y-e.h/2, w:e.w, h:e.h })) {
+        if (player.shield) { createParticles(e.x,e.y,10,'#00ff00'); enemies.splice(i,1); continue; }
+        if (player.repair) { player.repair=false; createParticles(e.x,e.y,10,'#ff0000'); enemies.splice(i,1); continue; }
+        if (e.type==='cow') { e.type='steak'; e.timer=60; e.speed=0; gameOverTimer=45; }
+        else if (e.type==='horse') { e.type='hay'; e.timer=60; e.speed=0; gameOverTimer=45; }
+        else { gameOverTimer=45; }
+        player.alive=false; gameoverDiv.classList.add('show'); createParticles(e.x,e.y,15);
+        playSound(100,'sawtooth',0.2,0.5); saveTotalDistance(); return;
       }
     }
-
     for (let house of houses) {
-      if (rectCollide(pRect, { x: house.x - house.w/2, y: house.y - house.h/2, w: house.w, h: house.h })) {
-        player.alive = false;
-        gameOverTimer = 45;
-        gameoverDiv.classList.add('show');
-        createParticles(player.x, player.y, 15);
-        playSound(80, 'sawtooth', 0.3, 0.4);
-        canvas.style.filter = 'brightness(2)';
-        setTimeout(() => canvas.style.filter = '', 100);
-        saveTotalDistance();
-        return;
+      if (rect(p, { x:house.x-house.w/2, y:house.y-house.h/2, w:house.w, h:house.h })) {
+        player.alive=false; gameOverTimer=45; gameoverDiv.classList.add('show');
+        createParticles(house.x,house.y,15); playSound(80,'sawtooth',0.3,0.4); saveTotalDistance(); return;
       }
     }
-
-    // Пули
-    for (let i=bullets.length-1; i>=0; i--) {
-      const b = bullets[i];
-      const bRect = { x: b.x - b.w/2, y: b.y - b.h/2, w: b.w, h: b.h };
-      let hit = false;
-      for (let j=enemies.length-1; j>=0; j--) {
-        const e = enemies[j];
-        if (e.type === 'steak' || e.type === 'hay') continue;
-        if (rectCollide(bRect, { x: e.x - e.w/2, y: e.y - e.h/2, w: e.w, h: e.h })) {
-          enemies.splice(j,1);
-          releaseEnemyToPool(e);
-          bullets.splice(i,1);
-          createParticles(e.x, e.y, 10);
-          playSound(600, 'square', 0.1, 0.2);
-          enemiesDestroyed++;
-          if (enemiesDestroyed === 10) showAchievement('🎯 Меткий стрелок!');
-          hit = true;
-          break;
+    for (let i=bullets.length-1;i>=0;i--) {
+      const b = bullets[i]; let hit=false;
+      for (let j=enemies.length-1;j>=0;j--) {
+        const e = enemies[j]; if (e.type==='steak'||e.type==='hay') continue;
+        if (rect({ x:b.x-b.w/2, y:b.y-b.h/2, w:b.w, h:b.h }, { x:e.x-e.w/2, y:e.y-e.h/2, w:e.w, h:e.h })) {
+          enemies.splice(j,1); bullets.splice(i,1); createParticles(e.x,e.y,10); playSound(600,'square',0.1,0.2); hit=true; break;
         }
       }
-      if (!hit && (b.y < -20 || b.y > H+20)) bullets.splice(i,1);
+      if (!hit && (b.y<-20 || b.y>H+20)) bullets.splice(i,1);
     }
   }
 
-  function saveTotalDistance() {
-    localStorage.setItem('roadTotalDistance', totalDistance.toString());
-    updateMenuCannon();
-  }
-
+  function saveTotalDistance() { localStorage.setItem('roadTotalDistance', totalDistance); updateMenuCannon(); }
   function updateMenuCannon() {
-    const progress = Math.min(totalDistance / 1000, 20).toFixed(1);
-    menuCannon.textContent = totalDistance >= 20000 ? '🔫 ГОТОВО' : `🔫 ${progress}/20 км`;
+    const p = Math.min(totalDistance/1000,20).toFixed(1);
+    menuCannon.textContent = totalDistance>=20000 ? '🔫 ГОТОВО' : `🔫 ${p}/20 км`;
   }
 
   function getTimeOfDay() {
-    const set = locSettings[currentLocation];
-    if (!set.timeChange) return set.fixedTime || 'day';
-    const km = totalDistance / 1000;
-    if (km < 5) return 'day'; if (km < 10) return 'night';
-    if (km < 11.5) return 'morning'; if (km < 13) return 'day';
-    if (km < 14.5) return 'evening';
-    let cycle = (km - 14.5) % 9.5;
-    if (cycle < 5) return 'night'; if (cycle < 6.5) return 'morning';
-    if (cycle < 8) return 'day'; return 'evening';
+    const s = locSettings[currentLocation];
+    if (!s.timeChange) return s.fixedTime||'day';
+    const km = totalDistance/1000;
+    if (km<5) return 'day'; if (km<10) return 'night';
+    if (km<11.5) return 'morning'; if (km<13) return 'day';
+    if (km<14.5) return 'evening';
+    const cycle = (km-14.5)%9.5;
+    if (cycle<5) return 'night'; if (cycle<6.5) return 'morning';
+    if (cycle<8) return 'day'; return 'evening';
   }
 
   const locSettings = {
-    'Обычная': { enemyTypes: ['car'], house: true, deco: ['tree','lamp'], baseSpeed: 4, spawnInterval: 110, houseInterval: 480, bonusInterval: 800, timeChange: true },
-    'Поле': { enemyTypes: ['tractor','combine'], house: false, deco: ['wheat','oat'], baseSpeed: 2.5, spawnInterval: 160, bonusInterval: 1000, timeChange: false },
-    'Деревня': { enemyTypes: ['horse','cow'], house: false, deco: ['house','fence'], baseSpeed: 3, spawnInterval: 140, bonusInterval: 900, timeChange: false, fixedTime: 'evening' },
-    'Закат': { enemyTypes: ['car'], house: true, deco: ['tree','lamp'], baseSpeed: 4, spawnInterval: 110, houseInterval: 480, bonusInterval: 800, timeChange: false, fixedTime: 'sunset' }
+    'Обычная': { enemyTypes:['car'], house:true, deco:['tree','lamp'], baseSpeed:4, spawnInterval:110, houseInterval:480, bonusInterval:800, timeChange:true },
+    'Поле': { enemyTypes:['tractor','combine'], house:false, deco:['wheat','oat'], baseSpeed:2.5, spawnInterval:160, bonusInterval:1000, timeChange:false },
+    'Деревня': { enemyTypes:['horse','cow'], house:false, deco:['house','fence'], baseSpeed:3, spawnInterval:140, bonusInterval:900, timeChange:false, fixedTime:'evening' },
+    'Закат': { enemyTypes:['car'], house:true, deco:['tree','lamp'], baseSpeed:4, spawnInterval:110, houseInterval:480, bonusInterval:800, timeChange:false, fixedTime:'sunset' }
   };
 
-  // ====== ОБНОВЛЕНИЕ ======
   function update(dt) {
     const frameDt = Math.min(0.05, dt);
-    const modeConfig = getSpeedModeConfig();
-
     if (!player.alive) {
-      if (gameOverTimer > 0) {
-        gameOverTimer--;
-        moveWorld(frameDt);
-        updateParticles(frameDt);
-        if (gameOverTimer <= 0) {
-          gameoverDiv.classList.add('show');
-          stopEngineSound();
-        }
-      }
+      if (gameOverTimer>0) { gameOverTimer--; moveWorld(frameDt); updateParticles(frameDt); if (gameOverTimer<=0) stopEngine(); }
       return;
     }
-
-    // Управление скоростью игрока
-    player.targetSpeed = modeConfig.playerBase;
-    if (keys['ArrowUp']) player.targetSpeed = modeConfig.playerBoost;
-    if (keys['ArrowDown']) player.targetSpeed = Math.max(1, modeConfig.playerBase - 1.5);
-    player.speed += (player.targetSpeed - player.speed) * Math.min(1, frameDt * 4);
-    if (Math.abs(player.speed - player.targetSpeed) < 0.05) player.speed = player.targetSpeed;
-
-    updateEngineSound(player.speed);
-
-    let turnAmount = 0;
-    if (keys['ArrowLeft']) turnAmount = -1;
-    if (keys['ArrowRight']) turnAmount = 1;
-    player.drift += (turnAmount * 0.5 - player.drift) * frameDt * 3;
-    player.vx = turnAmount * 3 + player.drift * 2;
-    player.x += player.vx * frameDt * 60;
-    player.x = Math.max(30, Math.min(W-30, player.x));
-
-    const scrollSpeed = player.speed * frameDt * 60;
-    roadOffset += scrollSpeed;
-    if (roadOffset > 40) roadOffset -= 40;
-
-    distance += scrollSpeed * 0.5;
-    totalDistance += scrollSpeed * 0.5;
-
-    if (Math.floor(totalDistance / 200) > Math.floor((totalDistance - scrollSpeed * 0.5) / 200)) saveTotalDistance();
-
-    document.getElementById('score').textContent = Math.floor(distance) + ' м';
-    const speedKmh = Math.floor(scrollSpeed * 3.6 / 10 * 10); // приблизительно
-    speedDisplay.textContent = speedKmh + ' км/ч';
-
-    player.cannonUnlocked = totalDistance >= 20000;
-    cannonProgress.textContent = player.cannonUnlocked ? '🔫 ГОТОВО' : `🔫 ${Math.min(totalDistance/1000, 20).toFixed(1)}/20 км`;
-    if (player.shootCooldown > 0) {
-      player.shootCooldown--;
-      cooldownBar.style.width = ((player.maxShootCooldown - player.shootCooldown) / player.maxShootCooldown * 100) + '%';
-    } else cooldownBar.style.width = '100%';
-
-    enemyBaseSpeed = locSettings[currentLocation].baseSpeed * (1 + Math.floor(totalDistance/500)*0.1);
+    const mode = getMode();
+    player.targetSpeed = mode.playerBase;
+    if (keys['ArrowUp']) player.targetSpeed = mode.playerBoost;
+    if (keys['ArrowDown']) player.targetSpeed = Math.max(1, mode.playerBase-1.5);
+    player.speed += (player.targetSpeed-player.speed)*Math.min(1,frameDt*4);
+    updateEngine(player.speed);
+    player.vx = (keys['ArrowLeft']?-3:0)+(keys['ArrowRight']?3:0);
+    player.x += player.vx*frameDt*60; player.x = Math.max(30, Math.min(W-30, player.x));
+    const scrollSpeed = player.speed*frameDt*60;
+    roadOffset += scrollSpeed; if (roadOffset>40) roadOffset-=40;
+    distance += scrollSpeed*0.5; totalDistance += scrollSpeed*0.5;
+    if (Math.floor(totalDistance/200) > Math.floor((totalDistance-scrollSpeed*0.5)/200)) saveTotalDistance();
+    document.getElementById('score').textContent = Math.floor(distance)+' м';
+    speedDisplay.textContent = Math.floor(player.speed*60*3.6/10)+' км/ч';
+    player.cannonUnlocked = totalDistance>=20000;
+    cannonProgress.textContent = player.cannonUnlocked?'🔫 ГОТОВО':`🔫 ${Math.min(totalDistance/1000,20).toFixed(1)}/20 км`;
+    if (player.shootCooldown>0) { player.shootCooldown--; cooldownBar.style.width = ((player.maxShootCooldown-player.shootCooldown)/player.maxShootCooldown*100)+'%'; }
+    else cooldownBar.style.width = '100%';
+    enemyBaseSpeed = locSettings[currentLocation].baseSpeed*(1+Math.floor(totalDistance/500)*0.1);
     const set = locSettings[currentLocation];
-    if (totalDistance - lastSpawnDist > set.spawnInterval) { spawnEnemy(); lastSpawnDist = totalDistance; }
-    if (set.house && totalDistance - lastHouseDist > set.houseInterval) { spawnHouse(); lastHouseDist = totalDistance; }
-    if (totalDistance - lastBonusDist > set.bonusInterval) { spawnBonus(); lastBonusDist = totalDistance; }
-
+    if (totalDistance-lastSpawnDist > set.spawnInterval) { spawnEnemy(); lastSpawnDist=totalDistance; }
+    if (set.house && totalDistance-lastHouseDist > set.houseInterval) { spawnHouse(); lastHouseDist=totalDistance; }
+    if (totalDistance-lastBonusDist > set.bonusInterval) { spawnBonus(); lastBonusDist=totalDistance; }
     moveWorld(frameDt);
-
-    const tod = getTimeOfDay();
-    timeDisplay.textContent = {day:'День', night:'Ночь', morning:'Утро', evening:'Вечер', sunset:'Закат'}[tod] || 'День';
-    timeBar.style.width = ((totalDistance % 1000) / 10) + '%';
-
-    if (distance > recordDistance) { recordDistance = Math.floor(distance); localStorage.setItem('roadRecord', recordDistance); menuRecord.textContent = recordDistance; }
-    recordDisplay.textContent = '🏆 ' + recordDistance + ' м';
-
-    const blur = Math.min(2, (player.speed - modeConfig.playerBase) * 0.7);
-    canvas.style.filter = blur > 0 ? `blur(${blur}px)` : 'none';
-
+    const tod = getTimeOfDay(); timeDisplay.textContent = {day:'День', night:'Ночь', morning:'Утро', evening:'Вечер', sunset:'Закат'}[tod]||'День';
+    timeBar.style.width = ((totalDistance%1000)/10)+'%';
+    if (distance>recordDistance) { recordDistance=Math.floor(distance); localStorage.setItem('roadRecord', recordDistance); menuRecord.textContent=recordDistance; }
+    recordDisplay.textContent = '🏆 '+recordDistance+' м';
+    canvas.style.filter = player.speed>mode.playerBase? `blur(${Math.min(2,(player.speed-mode.playerBase)*0.7)}px)`:'none';
     checkCollisions();
   }
 
   function moveWorld(dt) {
-    for (let i=enemies.length-1; i>=0; i--) {
-      const e = enemies[i];
-      if (e.timer > 0) { e.timer--; if (e.timer <= 0) { enemies.splice(i,1); releaseEnemyToPool(e); } }
-      else { e.y += e.speed * dt * 60; if (e.y > H+150) { enemies.splice(i,1); releaseEnemyToPool(e); } }
+    for (let i=enemies.length-1;i>=0;i--) {
+      const e = enemies[i]; if (e.timer>0) { e.timer--; if (e.timer<=0) enemies.splice(i,1); }
+      else { e.y += e.speed*dt*60; if (e.y>H+150) enemies.splice(i,1); }
     }
-    for (let house of houses) house.y += player.speed * dt * 60;
-    houses = houses.filter(h => h.y < H + 200);
-    for (let bullet of bullets) bullet.y -= bullet.speed * dt * 60;
-    bullets = bullets.filter(b => b.y > -50);
-    for (let bonus of bonuses) bonus.y += player.speed * dt * 60;
-    bonuses = bonuses.filter(b => b.y < H + 200);
+    for (let h of houses) h.y += player.speed*dt*60; houses = houses.filter(h=>h.y<H+200);
+    for (let b of bullets) b.y -= b.speed*dt*60; bullets = bullets.filter(b=>b.y>-50);
+    for (let b of bonuses) b.y += player.speed*dt*60; bonuses = bonuses.filter(b=>b.y<H+200);
   }
-
   function updateParticles(dt) {
-    for (let i=particles.length-1; i>=0; i--) {
-      const p = particles[i];
-      p.x += p.vx * dt * 60; p.y += p.vy * dt * 60;
-      p.vy += 0.3 * dt * 60; p.life -= 0.02 * dt * 60;
-      if (p.life <= 0) { particles.splice(i,1); releaseParticleToPool(p); }
+    for (let i=particles.length-1;i>=0;i--) {
+      const p = particles[i]; p.x+=p.vx*dt*60; p.y+=p.vy*dt*60; p.vy+=0.3*dt*60; p.life-=0.02*dt*60;
+      if (p.life<=0) particles.splice(i,1);
     }
   }
 
-  // ====== ОТРИСОВКА ======
-  function drawCar(x, y, w, h, c1, c2) {
-    ctx.save(); ctx.translate(x, y);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.roundRect(-w/2+3, -h/2+3, w, h, 10); ctx.fill();
-    ctx.fillStyle = c1; ctx.beginPath(); ctx.roundRect(-w/2, -h/2, w, h, 10); ctx.fill();
-    ctx.fillStyle = c2; ctx.fillRect(-w/2+6, -h/2+4, w-12, 7); ctx.fillRect(-w/2+6, h/2-11, w-12, 7);
-    ctx.fillStyle = '#aaddff'; ctx.beginPath(); ctx.roundRect(-8, -15, 8, 10, 2); ctx.fill(); ctx.beginPath(); ctx.roundRect(4, -15, 8, 10, 2); ctx.fill();
-    ctx.fillStyle = '#ffff99'; ctx.beginPath(); ctx.arc(-w/2+8, -h/2+8, 4, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(w/2-8, -h/2+8, 4, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#111'; ctx.beginPath(); ctx.ellipse(-w/2+8, h/2-5, 6, 8, 0, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(w/2-8, h/2-5, 6, 8, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#555'; ctx.beginPath(); ctx.ellipse(-w/2+8, h/2-5, 3, 4, 0, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(w/2-8, h/2-5, 3, 4, 0, 0, Math.PI*2); ctx.fill();
-    ctx.restore();
-  }
-
-  function drawHorse(x,y){ctx.save();ctx.translate(x,y);ctx.fillStyle='#8B4513';ctx.beginPath();ctx.ellipse(0,0,18,25,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#6B3410';ctx.beginPath();ctx.arc(0,-30,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2b1a0e';ctx.beginPath();ctx.moveTo(-5,-35);ctx.lineTo(-15,-18);ctx.stroke();ctx.fillStyle='#6B3410';ctx.fillRect(-12,15,5,20);ctx.fillRect(7,15,5,20);ctx.fillStyle='#8B0000';ctx.fillRect(-10,-8,20,8);ctx.restore();}
-  function drawCow(x,y){ctx.save();ctx.translate(x,y);ctx.fillStyle='#FFF';ctx.beginPath();ctx.ellipse(0,0,22,30,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#000';ctx.beginPath();ctx.arc(-12,-10,7,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(15,-15,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#FFF';ctx.beginPath();ctx.arc(0,-35,14,0,Math.PI*2);ctx.fill();ctx.fillStyle='#FFC0CB';ctx.beginPath();ctx.arc(0,-38,7,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#000';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-8,-45);ctx.lineTo(-12,-55);ctx.stroke();ctx.beginPath();ctx.moveTo(8,-45);ctx.lineTo(12,-55);ctx.stroke();ctx.fillStyle='#FFF';ctx.fillRect(-15,20,7,20);ctx.fillRect(8,20,7,20);ctx.fillStyle='#333';ctx.fillRect(-15,35,7,5);ctx.fillRect(8,35,7,5);ctx.restore();}
-  function drawSteak(x,y){ctx.save();ctx.translate(x,y);ctx.fillStyle='#8B4513';ctx.beginPath();ctx.ellipse(0,0,18,12,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#FFD700';ctx.beginPath();ctx.ellipse(0,-3,10,6,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#FFF8DC';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-15,-5);ctx.lineTo(15,-5);ctx.stroke();ctx.restore();}
-  function drawHay(x,y){ctx.save();ctx.translate(x,y);ctx.fillStyle='#DAA520';ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(-15,-15);ctx.lineTo(15,-15);ctx.fill();ctx.fillStyle='#B8860B';ctx.beginPath();ctx.moveTo(0,20);ctx.lineTo(-20,-10);ctx.lineTo(20,-10);ctx.fill();ctx.strokeStyle='#FFD700';ctx.lineWidth=2;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(-10+i*5,-15);ctx.lineTo(-15+i*6,-25);ctx.stroke();}ctx.restore();}
-
-  function drawEnemy(enemy) {
-    switch(enemy.type) {
-      case 'car': drawCar(enemy.x, enemy.y, enemy.w, enemy.h, enemy.color, '#fff'); break;
-      case 'tractor': ctx.fillStyle='#8B4513'; ctx.fillRect(enemy.x-enemy.w/2,enemy.y-enemy.h/2,enemy.w,enemy.h); break;
-      case 'combine': ctx.fillStyle='#B22222'; ctx.fillRect(enemy.x-enemy.w/2,enemy.y-enemy.h/2,enemy.w,enemy.h); break;
-      case 'horse': drawHorse(enemy.x, enemy.y); break;
-      case 'cow': drawCow(enemy.x, enemy.y); break;
-      case 'steak': drawSteak(enemy.x, enemy.y); break;
-      case 'hay': drawHay(enemy.x, enemy.y); break;
-    }
-  }
-
-  const decorationsList = [];
-  function drawDecorations() {
-    if (decorationsList.length === 0) {
-      for (let y = -200; y < H+200; y += 80+Math.random()*60) {
-        const type = locSettings[currentLocation].deco[Math.floor(Math.random()*locSettings[currentLocation].deco.length)];
-        decorationsList.push({ type, y, side: Math.random()<0.5?'left':'right' });
-      }
-    }
-    for (let d of decorationsList) {
-      d.y += player.speed * 0.016 * 60;
-      if (d.y > H+120) { d.y = -100; d.type = locSettings[currentLocation].deco[Math.floor(Math.random()*locSettings[currentLocation].deco.length)]; d.side = Math.random()<0.5?'left':'right'; }
-      const x = d.side==='left'? 10 : W-30;
-      if (d.type === 'tree') {
-        ctx.fillStyle = '#8B4513'; ctx.fillRect(x-2, d.y, 4, 20);
-        ctx.fillStyle = getTimeOfDay()==='night'?'#0a4a0a':'#2e7d32';
-        ctx.beginPath(); ctx.arc(x, d.y-5, 10, 0, Math.PI*2); ctx.fill();
-      } else if (d.type === 'lamp') {
-        ctx.fillStyle = '#555'; ctx.fillRect(x-1, d.y, 2, 25);
-        ctx.fillStyle = getTimeOfDay()==='night'?'#ffd54f':'#fff59d';
-        ctx.beginPath(); ctx.arc(x, d.y-3, 5, 0, Math.PI*2); ctx.fill();
-      } else if (d.type === 'wheat') { ctx.fillStyle = '#DAA520'; ctx.fillRect(x, d.y, 3, 15); ctx.beginPath(); ctx.arc(x+1.5, d.y-2, 3, 0, Math.PI*2); ctx.fill(); }
-      else if (d.type === 'oat') { ctx.fillStyle = '#8FBC8F'; ctx.fillRect(x, d.y, 3, 15); ctx.beginPath(); ctx.arc(x+1.5, d.y-2, 3, 0, Math.PI*2); ctx.fill(); }
-      else if (d.type === 'house') { ctx.fillStyle = '#d4a373'; ctx.fillRect(x-10, d.y-15, 20, 20); ctx.fillStyle = '#8b4513'; ctx.beginPath(); ctx.moveTo(x-13,d.y-15); ctx.lineTo(x,d.y-28); ctx.lineTo(x+13,d.y-15); ctx.fill(); }
-      else if (d.type === 'fence') { ctx.fillStyle = '#8B4513'; ctx.fillRect(x-2, d.y, 4, 15); }
-    }
-  }
-
-  function drawBonus(bonus) {
-    const { x, y, type } = bonus;
-    ctx.save(); ctx.translate(x, y);
-    if (type === 'shield') { ctx.fillStyle = '#00ff00'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle = 'white'; ctx.font = '16px Arial'; ctx.fillText('🛡️', -8, 6); }
-    else if (type === 'boost') { ctx.fillStyle = '#ffff00'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle = 'black'; ctx.font = '16px Arial'; ctx.fillText('🚀', -8, 6); }
-    else if (type === 'repair') { ctx.fillStyle = '#ff0000'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle = 'white'; ctx.font = '16px Arial'; ctx.fillText('🔧', -8, 6); }
+  // Отрисовка
+  function drawCar(x,y,w,h,c1,c2) {
+    ctx.save(); ctx.translate(x,y);
+    ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.roundRect(-w/2+3,-h/2+3,w,h,10); ctx.fill();
+    ctx.fillStyle=c1; ctx.beginPath(); ctx.roundRect(-w/2,-h/2,w,h,10); ctx.fill();
+    ctx.fillStyle=c2; ctx.fillRect(-w/2+6,-h/2+4,w-12,7); ctx.fillRect(-w/2+6,h/2-11,w-12,7);
+    ctx.fillStyle='#aaddff'; ctx.beginPath(); ctx.roundRect(-8,-15,8,10,2); ctx.fill(); ctx.beginPath(); ctx.roundRect(4,-15,8,10,2); ctx.fill();
+    ctx.fillStyle='#ffff99'; ctx.beginPath(); ctx.arc(-w/2+8,-h/2+8,4,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(w/2-8,-h/2+8,4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.ellipse(-w/2+8,h/2-5,6,8,0,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(w/2-8,h/2-5,6,8,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#555'; ctx.beginPath(); ctx.ellipse(-w/2+8,h/2-5,3,4,0,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(w/2-8,h/2-5,3,4,0,0,Math.PI*2); ctx.fill();
     ctx.restore();
   }
 
   function drawRoad() {
     const tod = getTimeOfDay();
-    let bg, grass, road;
-    if (tod === 'sunset') {
-      const grad = ctx.createLinearGradient(0,0,0,H);
-      grad.addColorStop(0,'#8B00FF'); grad.addColorStop(0.4,'#FF69B4'); grad.addColorStop(0.7,'#FF8C00'); grad.addColorStop(1,'#FF0000');
-      ctx.fillStyle = grad; ctx.fillRect(0,0,W,H);
-      grass = '#8B4513'; road = '#3E2723';
+    if (tod==='sunset') {
+      const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#8B00FF'); g.addColorStop(0.4,'#FF69B4'); g.addColorStop(0.7,'#FF8C00'); g.addColorStop(1,'#FF0000');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#8B4513'; ctx.fillRect(0,0,20,H); ctx.fillRect(W-20,0,20,H);
+      ctx.fillStyle='#3E2723'; ctx.fillRect(20,0,W-40,H);
     } else {
-      if (tod === 'day') { bg='#87CEEB'; grass='#4caf50'; road='#444'; }
-      else if (tod === 'night') { bg='#12121a'; grass='#1a2e1a'; road='#222'; }
-      else if (tod === 'morning') { bg='#ffe4b5'; grass='#6b8e23'; road='#555'; }
-      else if (tod === 'evening') { bg='#ff7f50'; grass='#556b2f'; road='#3a3a3a'; }
-      else { bg='#87CEEB'; grass='#4caf50'; road='#444'; }
-      ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+      const cfg = {day:['#87CEEB','#4caf50','#444'], night:['#12121a','#1a2e1a','#222'], morning:['#ffe4b5','#6b8e23','#555'], evening:['#ff7f50','#556b2f','#3a3a3a']};
+      const [bg,grass,road] = cfg[tod]||cfg.day;
+      ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle=grass; ctx.fillRect(0,0,20,H); ctx.fillRect(W-20,0,20,H);
+      ctx.fillStyle=road; ctx.fillRect(20,0,W-40,H);
     }
-    ctx.fillStyle = grass; ctx.fillRect(0,0,20,H); ctx.fillRect(W-20,0,20,H);
-    ctx.fillStyle = road; ctx.fillRect(20,0,W-40,H);
-    ctx.strokeStyle = '#fff'; ctx.lineWidth=2;
-    for (let i=0; i<lanes.length-1; i++) {
-      let x = (lanes[i]+lanes[i+1])/2;
-      for (let y=-roadOffset; y<H; y+=50) { ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+30); ctx.stroke(); }
-    }
-    ctx.strokeStyle = '#fff'; ctx.lineWidth=3;
-    ctx.beginPath(); ctx.moveTo(20,0); ctx.lineTo(20,H); ctx.moveTo(W-20,0); ctx.lineTo(W-20,H); ctx.stroke();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2;
+    for (let i=0;i<lanes.length-1;i++) for (let y=-roadOffset; y<H; y+=50) { ctx.beginPath(); ctx.moveTo((lanes[i]+lanes[i+1])/2,y); ctx.lineTo((lanes[i]+lanes[i+1])/2,y+30); ctx.stroke(); }
+    ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(20,0); ctx.lineTo(20,H); ctx.moveTo(W-20,0); ctx.lineTo(W-20,H); ctx.stroke();
   }
 
   function draw() {
     ctx.clearRect(0,0,W,H);
     drawRoad();
-    drawDecorations();
-    for (let enemy of enemies) drawEnemy(enemy);
-    for (let house of houses) {
-      ctx.fillStyle = '#d4a373'; ctx.beginPath(); ctx.roundRect(house.x - house.w/2, house.y - house.h/2, house.w, house.h, 8); ctx.fill();
-      ctx.fillStyle = '#8b4513'; ctx.beginPath(); ctx.moveTo(house.x - house.w/2-5, house.y - house.h/2); ctx.lineTo(house.x, house.y - house.h/2-20); ctx.lineTo(house.x + house.w/2+5, house.y - house.h/2); ctx.fill();
-      ctx.fillStyle = '#87CEEB'; ctx.beginPath(); ctx.roundRect(house.x - 10, house.y - 8, 8, 8, 1); ctx.fill();
+    for (let e of enemies) drawEnemy(e);
+    for (let h of houses) {
+      ctx.fillStyle='#d4a373'; ctx.beginPath(); ctx.roundRect(h.x-h.w/2,h.y-h.h/2,h.w,h.h,8); ctx.fill();
+      ctx.fillStyle='#8b4513'; ctx.beginPath(); ctx.moveTo(h.x-h.w/2-5,h.y-h.h/2); ctx.lineTo(h.x,h.y-h.h/2-20); ctx.lineTo(h.x+h.w/2+5,h.y-h.h/2); ctx.fill();
+      ctx.fillStyle='#87CEEB'; ctx.beginPath(); ctx.roundRect(h.x-10,h.y-8,8,8,1); ctx.fill();
     }
-    for (let bonus of bonuses) drawBonus(bonus);
-    ctx.fillStyle = '#ffaa00';
-    for (let bullet of bullets) ctx.fillRect(bullet.x - bullet.w/2, bullet.y - bullet.h/2, bullet.w, bullet.h);
-    if (player.alive) drawCar(player.x, player.y, player.w, player.h, playerColor1, playerColor2);
-    for (let p of particles) { ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill(); }
-    ctx.globalAlpha = 1;
+    for (let b of bonuses) {
+      ctx.save(); ctx.translate(b.x,b.y);
+      if (b.type==='shield') { ctx.fillStyle='#0f0'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText('🛡️',-8,6); }
+      else if (b.type==='boost') { ctx.fillStyle='#ff0'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillText('🚀',-8,6); }
+      else { ctx.fillStyle='#f00'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); ctx.fillText('🔧',-8,6); }
+      ctx.restore();
+    }
+    ctx.fillStyle='#ffaa00'; for (let b of bullets) ctx.fillRect(b.x-b.w/2,b.y-b.h/2,b.w,b.h);
+    if (player.alive) drawCar(player.x,player.y,player.w,player.h,playerColor1,playerColor2);
+    for (let p of particles) { ctx.globalAlpha=p.life; ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill(); }
+    ctx.globalAlpha=1;
   }
 
-  // ====== ИГРОВОЙ ЦИКЛ ======
+  function drawEnemy(e) {
+    switch(e.type) {
+      case 'car': drawCar(e.x,e.y,e.w,e.h,e.color,'#fff'); break;
+      case 'tractor': ctx.fillStyle='#8B4513'; ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h); break;
+      case 'combine': ctx.fillStyle='#B22222'; ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h); break;
+      case 'horse': ctx.fillStyle='#8B4513'; ctx.fillRect(e.x-15,e.y-25,30,50); break;
+      case 'cow': ctx.fillStyle='#FFF'; ctx.fillRect(e.x-18,e.y-30,36,60); break;
+      case 'steak': ctx.fillStyle='#8B4513'; ctx.fillRect(e.x-15,e.y-10,30,20); break;
+      case 'hay': ctx.fillStyle='#DAA520'; ctx.fillRect(e.x-15,e.y-10,30,20); break;
+    }
+  }
+
   let lastTime = performance.now();
   function gameLoop(now) {
-    const dt = (now - lastTime) / 1000;
-    lastTime = now;
+    const dt = (now-lastTime)/1000; lastTime=now;
     if (gameRunning) { update(dt); draw(); }
     requestAnimationFrame(gameLoop);
   }
 
-  // ====== УПРАВЛЕНИЕ МЕНЮ ======
   function resetGame() {
-    const modeConfig = getSpeedModeConfig();
-    player.alive = true; player.x = W/2; player.y = H-100;
-    player.speed = modeConfig.playerBase; player.targetSpeed = modeConfig.playerBase;
-    player.vx = 0; player.drift = 0; player.shootCooldown = 0;
-    enemies = []; houses = []; bullets = []; bonuses = []; particles = [];
-    distance = 0;
-    lastSpawnDist = totalDistance; lastHouseDist = totalDistance; lastBonusDist = totalDistance;
-    enemyBaseSpeed = locSettings[currentLocation].baseSpeed * (1 + Math.floor(totalDistance/500)*0.1);
-    decorationsList.length = 0;
-    gameoverDiv.classList.remove('show');
-    gameOverTimer = 0;
-    player.cannonUnlocked = totalDistance >= 20000;
-    roadOffset = 0; canvas.style.filter = '';
-    player.shield = false; player.boost = false; player.repair = false;
-    for (let i=0; i<2; i++) spawnEnemy(-i*200);
-    startEngineSound();
+    const mode = getMode();
+    player.alive=true; player.x=W/2; player.y=H-100; player.speed=mode.playerBase; player.targetSpeed=mode.playerBase;
+    player.vx=0; enemies=[]; houses=[]; bullets=[]; bonuses=[]; particles=[]; distance=0;
+    lastSpawnDist=totalDistance; lastHouseDist=totalDistance; lastBonusDist=totalDistance;
+    gameoverDiv.classList.remove('show'); gameOverTimer=0;
+    for (let i=0;i<2;i++) spawnEnemy(-i*200);
+    startEngine();
   }
 
   function startGame() {
-    initAudio();
-    menuDiv.style.display = 'none';
-    gameContainer.style.display = 'block';
-    gameRunning = true;
-    loadTotalDistance();
-    resetGame();
+    initAudio(); menuDiv.style.display='none'; gameContainer.style.display='block'; gameRunning=true; resetGame();
   }
 
   function goToMenu() {
-    gameRunning = false;
-    gameContainer.style.display = 'none';
-    menuDiv.style.display = 'block';
-    menuRecord.textContent = recordDistance;
-    updateMenuCannon();
-    stopEngineSound();
+    gameRunning=false; gameContainer.style.display='none'; menuDiv.style.display='block'; menuRecord.textContent=recordDistance; updateMenuCannon(); stopEngine();
   }
 
-  // Обработчики меню
-  document.querySelectorAll('#skinContainer .skin-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#skinContainer .skin-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected'); playerColor1 = btn.dataset.color;
-    });
-  });
-  document.querySelectorAll('#skinContainer2 .skin-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#skinContainer2 .skin-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected'); playerColor2 = btn.dataset.color2;
-    });
-  });
-  document.querySelectorAll('.location-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected'); currentLocation = btn.dataset.loc;
-    });
-  });
-  // Выбор режима скорости
-  document.querySelectorAll('.speed-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      currentSpeedMode = btn.dataset.mode;
-    });
-  });
+  // Меню
+  document.querySelectorAll('#skinContainer .skin-btn').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('#skinContainer .skin-btn').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); playerColor1=b.dataset.color; }));
+  document.querySelectorAll('#skinContainer2 .skin-btn').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('#skinContainer2 .skin-btn').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); playerColor2=b.dataset.color2; }));
+  document.querySelectorAll('.location-btn').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('.location-btn').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); currentLocation=b.dataset.loc; }));
+  // Кнопки скорости: обязательно работают
+  document.querySelectorAll('.speed-btn').forEach(b=>b.addEventListener('click', ()=>{
+    document.querySelectorAll('.speed-btn').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');
+    currentSpeedMode = b.dataset.mode;
+  }));
+
   document.getElementById('playBtn').addEventListener('click', startGame);
-  window.addEventListener('keydown', e => { if (e.key === 'Escape' && gameRunning) goToMenu(); });
+  window.addEventListener('keydown', e=>{ if (e.key==='Escape'&&gameRunning) goToMenu(); });
 
   const keys = {};
-  window.addEventListener('keydown', e => {
-    keys[e.key] = true;
-    e.preventDefault();
-    if (e.key === ' ' && gameRunning) {
-      if (player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
-        shootBullet();
-        player.shootCooldown = player.maxShootCooldown;
-      } else if (!player.alive && gameOverTimer <= 0) {
-        resetGame();
-      }
+  window.addEventListener('keydown', e=>{
+    keys[e.key]=true; e.preventDefault();
+    if (e.key===' '&&gameRunning) {
+      if (player.alive && player.cannonUnlocked && player.shootCooldown<=0) { shootBullet(); player.shootCooldown=player.maxShootCooldown; }
+      else if (!player.alive && gameOverTimer<=0) resetGame();
     }
-    if (e.key === 'Escape' && gameRunning) goToMenu();
+    if (e.key==='Escape'&&gameRunning) goToMenu();
   });
-  window.addEventListener('keyup', e => { keys[e.key] = false; e.preventDefault(); });
-
-  canvas.addEventListener('click', () => {
+  window.addEventListener('keyup', e=>{ keys[e.key]=false; e.preventDefault(); });
+  canvas.addEventListener('click', ()=>{
     if (!gameRunning) return;
-    if (player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
-      shootBullet();
-      player.shootCooldown = player.maxShootCooldown;
-    } else if (!player.alive && gameOverTimer <= 0) {
-      resetGame();
-    }
+    if (player.alive && player.cannonUnlocked && player.shootCooldown<=0) { shootBullet(); player.shootCooldown=player.maxShootCooldown; }
+    else if (!player.alive && gameOverTimer<=0) resetGame();
   });
 
-  // Полифилл roundRect
   if (!ctx.roundRect) {
-    ctx.roundRect = function(x, y, w, h, r) {
-      if (typeof r === 'number') r = {tl: r, tr: r, br: r, bl: r};
-      ctx.beginPath();
-      ctx.moveTo(x + r.tl, y);
-      ctx.lineTo(x + w - r.tr, y);
-      ctx.quadraticCurveTo(x + w, y, x + w, y + r.tr);
-      ctx.lineTo(x + w, y + h - r.br);
-      ctx.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
-      ctx.lineTo(x + r.bl, y + h);
-      ctx.quadraticCurveTo(x, y + h, x, y + h - r.bl);
-      ctx.lineTo(x, y + r.tl);
-      ctx.quadraticCurveTo(x, y, x + r.tl, y);
-      ctx.closePath();
+    ctx.roundRect = function(x,y,w,h,r) {
+      if (typeof r==='number') r={tl:r,tr:r,br:r,bl:r};
+      ctx.beginPath(); ctx.moveTo(x+r.tl,y); ctx.lineTo(x+w-r.tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);
+      ctx.lineTo(x+w,y+h-r.br); ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h); ctx.lineTo(x+r.bl,y+h);
+      ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl); ctx.lineTo(x,y+r.tl); ctx.quadraticCurveTo(x,y,x+r.tl,y); ctx.closePath();
     };
   }
 
