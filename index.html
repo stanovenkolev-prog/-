@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Безумная дорога – Мышка чинится!</title>
+  <title>Безумная дорога – Режимы скорости</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#111; display:flex; justify-content:center; align-items:center; height:100vh; font-family:Arial; overflow:hidden; }
-    #menu { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.9); color:white; padding:25px; border-radius:20px; text-align:center; z-index:10; min-width:320px; }
+    #menu { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.9); color:white; padding:25px; border-radius:20px; text-align:center; z-index:10; min-width:340px; }
     #menu h1 { font-size:34px; margin-bottom:20px; color:#ffcc00; text-shadow:0 0 10px #ff8800; }
     .btn { background:#ff6600; color:white; border:none; padding:12px 30px; border-radius:30px; font-size:18px; cursor:pointer; margin:6px; transition:0.2s; box-shadow:0 4px 10px rgba(255,100,0,0.5); }
     .btn:hover { background:#ff8800; transform:scale(1.05); }
     .skin-btn { width:40px; height:40px; border-radius:50%; border:3px solid white; margin:5px; cursor:pointer; display:inline-block; transition:0.2s; }
     .skin-btn.selected { border-color:#ffcc00; transform:scale(1.2); box-shadow:0 0 12px #ffcc00; }
-    .location-btn { background:#444; color:white; border:2px solid #888; padding:8px 18px; border-radius:12px; margin:4px; cursor:pointer; transition:0.2s; }
-    .location-btn.selected { border-color:#ffcc00; background:#ff6600; }
+    .location-btn, .speed-btn { background:#444; color:white; border:2px solid #888; padding:8px 18px; border-radius:12px; margin:4px; cursor:pointer; transition:0.2s; }
+    .location-btn.selected, .speed-btn.selected { border-color:#ffcc00; background:#ff6600; }
     #gameContainer { position:relative; display:none; }
     canvas { display:block; border:2px solid #fff; background:#87CEEB; }
     #info { position:absolute; bottom:10px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:14px; }
@@ -22,7 +22,6 @@
     #speed { position:absolute; top:10px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:18px; }
     #gameover { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.85); color:white; padding:18px 30px; border-radius:15px; text-align:center; display:none; font-size:22px; opacity:0; transition:opacity 0.3s; }
     #gameover.show { display:block; opacity:1; }
-    #menuBtn { position:absolute; top:10px; left:10px; background:#ff6600; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:15px; z-index:2; }
     #timeDisplay { position:absolute; top:40px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:3px 10px; border-radius:8px; font-size:14px; }
     #cannonProgress { position:absolute; top:70px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:3px 10px; border-radius:8px; font-size:14px; }
     #cooldownBar { position:absolute; top:95px; left:10px; height:4px; background:#ffaa00; transition:width 0.1s; width:0%; border-radius:2px; }
@@ -41,6 +40,12 @@
     <button class="location-btn" data-loc="Деревня">Деревня</button>
     <button class="location-btn" data-loc="Закат">Закат</button>
   </div>
+  <p>Скорость:</p>
+  <div id="speedModeContainer">
+    <button class="speed-btn" data-mode="slow">🐢 Медленная</button>
+    <button class="speed-btn selected" data-mode="normal">🚗 Обычная</button>
+    <button class="speed-btn" data-mode="fast">🚀 Быстрая</button>
+  </div>
   <p>Цвет машины (основной):</p>
   <div id="skinContainer">
     <span class="skin-btn selected" data-color="#ff4444" style="background:#ff4444;"></span>
@@ -48,6 +53,11 @@
     <span class="skin-btn" data-color="#44ff44" style="background:#44ff44;"></span>
     <span class="skin-btn" data-color="#ffaa00" style="background:#ffaa00;"></span>
     <span class="skin-btn" data-color="#ff44ff" style="background:#ff44ff;"></span>
+    <span class="skin-btn" data-color="#ff8800" style="background:#ff8800;"></span>
+    <span class="skin-btn" data-color="#ff00ff" style="background:#ff00ff;"></span>
+    <span class="skin-btn" data-color="#00ffff" style="background:#00ffff;"></span>
+    <span class="skin-btn" data-color="#ffff00" style="background:#ffff00;"></span>
+    <span class="skin-btn" data-color="#ffffff" style="background:#ffffff;"></span>
   </div>
   <p>Полоса:</p>
   <div id="skinContainer2">
@@ -55,6 +65,10 @@
     <span class="skin-btn" data-color2="#000000" style="background:#000000;"></span>
     <span class="skin-btn" data-color2="#ffff00" style="background:#ffff00;"></span>
     <span class="skin-btn" data-color2="#00ffff" style="background:#00ffff;"></span>
+    <span class="skin-btn" data-color2="#ff4444" style="background:#ff4444;"></span>
+    <span class="skin-btn" data-color2="#44ff44" style="background:#44ff44;"></span>
+    <span class="skin-btn" data-color2="#ff00ff" style="background:#ff00ff;"></span>
+    <span class="skin-btn" data-color2="#ff8800" style="background:#ff8800;"></span>
   </div>
   <button class="btn" id="playBtn">▶ ИГРАТЬ</button>
   <div style="margin-top:10px;font-size:14px;">Рекорд: <span id="menuRecord">0</span> м</div>
@@ -62,7 +76,6 @@
 </div>
 <div id="gameContainer">
   <canvas id="game" width="400" height="600"></canvas>
-  <button id="menuBtn">Меню</button>
   <div id="speed">60 км/ч</div>
   <div id="timeDisplay">День</div>
   <div id="score">0 м</div>
@@ -71,8 +84,8 @@
   <div id="record">🏆 0 м</div>
   <div id="timeBar"></div>
   <div id="achievement"></div>
-  <div id="info">⬅➡ — руль | ⬆ — газ | ⬇ — тормоз | ПРОБЕЛ/КЛИК — стрельба</div>
-  <div id="gameover">АВАРИЯ!<br>Кликни или ПРОБЕЛ — заново</div>
+  <div id="info">⬅➡ — руль | ⬆ — газ | ⬇ — тормоз | ПРОБЕЛ/КЛИК — стрельба | ESC — меню</div>
+  <div id="gameover">АВАРИЯ!<br>ПРОБЕЛ или КЛИК — заново</div>
 </div>
 
 <script>
@@ -94,13 +107,13 @@
   const menuCannon = document.getElementById('menuCannon');
   const timeBar = document.getElementById('timeBar');
   const achievementDiv = document.getElementById('achievement');
-  const menuBtn = document.getElementById('menuBtn');
 
   // Состояние игры
   let gameRunning = false;
   let playerColor1 = '#ff4444';
   let playerColor2 = '#ffffff';
   let currentLocation = 'Обычная';
+  let currentSpeedMode = 'normal'; // 'slow', 'normal', 'fast'
   let recordDistance = parseInt(localStorage.getItem('roadRecord')) || 0;
   let totalDistance = parseFloat(localStorage.getItem('roadTotalDistance')) || 0;
   let distance = 0;
@@ -138,7 +151,18 @@
     drift: 0
   };
 
-  // ====== ЗВУК (двигатель + эффекты) ======
+  // ====== РЕЖИМЫ СКОРОСТИ ======
+  const speedModes = {
+    slow: { name: 'Медленная', playerBase: 2, playerBoost: 3, enemyCoeff: 0.5 },
+    normal: { name: 'Обычная', playerBase: 4, playerBoost: 6.5, enemyCoeff: 1 },
+    fast: { name: 'Быстрая', playerBase: 6, playerBoost: 9, enemyCoeff: 1.5 }
+  };
+
+  function getSpeedModeConfig() {
+    return speedModes[currentSpeedMode] || speedModes.normal;
+  }
+
+  // ====== ЗВУК ======
   let audioCtx = null;
   let engineOsc = null;
   let engineGain = null;
@@ -185,9 +209,9 @@
     osc.start(); osc.stop(audioCtx.currentTime + duration);
   }
 
-  // Активируем звук при первом клике
-  window.addEventListener('click', () => { initAudio(); }, { once: true });
-  window.addEventListener('keydown', () => { initAudio(); }, { once: true });
+  // Активация звука при первом клике/нажатии
+  window.addEventListener('click', initAudio, { once: true });
+  window.addEventListener('keydown', initAudio, { once: true });
 
   // ====== ПУЛЫ ОБЪЕКТОВ ======
   function getEnemyFromPool() { return enemyPool.pop() || {}; }
@@ -201,13 +225,14 @@
     const lane = lanes[Math.floor(Math.random() * lanes.length)];
     const type = set.enemyTypes[Math.floor(Math.random() * set.enemyTypes.length)];
     let w, h, spd;
+    const enemyCoeff = getSpeedModeConfig().enemyCoeff;
     switch(type) {
-      case 'car': w=40; h=70; spd = enemyBaseSpeed; break;
-      case 'tractor': w=50; h=80; spd = enemyBaseSpeed*0.8; break;
-      case 'combine': w=60; h=100; spd = enemyBaseSpeed*0.6; break;
-      case 'horse': w=40; h=70; spd = enemyBaseSpeed*1.3; break;
-      case 'cow': w=50; h=75; spd = enemyBaseSpeed*0.9; break;
-      default: w=40; h=70; spd = enemyBaseSpeed;
+      case 'car': w=40; h=70; spd = enemyBaseSpeed * enemyCoeff; break;
+      case 'tractor': w=50; h=80; spd = enemyBaseSpeed * 0.8 * enemyCoeff; break;
+      case 'combine': w=60; h=100; spd = enemyBaseSpeed * 0.6 * enemyCoeff; break;
+      case 'horse': w=40; h=70; spd = enemyBaseSpeed * 1.3 * enemyCoeff; break;
+      case 'cow': w=50; h=75; spd = enemyBaseSpeed * 0.9 * enemyCoeff; break;
+      default: w=40; h=70; spd = enemyBaseSpeed * enemyCoeff;
     }
     const enemy = getEnemyFromPool();
     Object.assign(enemy, { x: lane, y: yPos, w, h, speed: spd, type, lane, color: type==='car'? `hsl(${Math.random()*360},70%,50%)` : null, timer: 0 });
@@ -299,6 +324,7 @@
           playSound(300, 'sine', 0.2, 0.4);
         } else {
           player.alive = false;
+          gameOverTimer = 45;
           gameoverDiv.classList.add('show');
           createParticles(player.x, player.y, 15);
           playSound(100, 'sawtooth', 0.2, 0.5);
@@ -313,6 +339,7 @@
     for (let house of houses) {
       if (rectCollide(pRect, { x: house.x - house.w/2, y: house.y - house.h/2, w: house.w, h: house.h })) {
         player.alive = false;
+        gameOverTimer = 45;
         gameoverDiv.classList.add('show');
         createParticles(player.x, player.y, 15);
         playSound(80, 'sawtooth', 0.3, 0.4);
@@ -323,6 +350,7 @@
       }
     }
 
+    // Пули
     for (let i=bullets.length-1; i>=0; i--) {
       const b = bullets[i];
       const bRect = { x: b.x - b.w/2, y: b.y - b.h/2, w: b.w, h: b.h };
@@ -378,14 +406,25 @@
   // ====== ОБНОВЛЕНИЕ ======
   function update(dt) {
     const frameDt = Math.min(0.05, dt);
+    const modeConfig = getSpeedModeConfig();
+
     if (!player.alive) {
-      if (gameOverTimer > 0) { gameOverTimer--; moveWorld(frameDt); updateParticles(frameDt); if (gameOverTimer <= 0) gameoverDiv.classList.add('show'); }
+      if (gameOverTimer > 0) {
+        gameOverTimer--;
+        moveWorld(frameDt);
+        updateParticles(frameDt);
+        if (gameOverTimer <= 0) {
+          gameoverDiv.classList.add('show');
+          stopEngineSound();
+        }
+      }
       return;
     }
 
-    player.targetSpeed = 4;
-    if (keys['ArrowUp']) player.targetSpeed = 6.5;
-    if (keys['ArrowDown']) player.targetSpeed = 2;
+    // Управление скоростью игрока
+    player.targetSpeed = modeConfig.playerBase;
+    if (keys['ArrowUp']) player.targetSpeed = modeConfig.playerBoost;
+    if (keys['ArrowDown']) player.targetSpeed = Math.max(1, modeConfig.playerBase - 1.5);
     player.speed += (player.targetSpeed - player.speed) * Math.min(1, frameDt * 4);
     if (Math.abs(player.speed - player.targetSpeed) < 0.05) player.speed = player.targetSpeed;
 
@@ -409,7 +448,8 @@
     if (Math.floor(totalDistance / 200) > Math.floor((totalDistance - scrollSpeed * 0.5) / 200)) saveTotalDistance();
 
     document.getElementById('score').textContent = Math.floor(distance) + ' м';
-    speedDisplay.textContent = Math.floor(player.speed * 60 * 3.6 / 10) + ' км/ч';
+    const speedKmh = Math.floor(scrollSpeed * 3.6 / 10 * 10); // приблизительно
+    speedDisplay.textContent = speedKmh + ' км/ч';
 
     player.cannonUnlocked = totalDistance >= 20000;
     cannonProgress.textContent = player.cannonUnlocked ? '🔫 ГОТОВО' : `🔫 ${Math.min(totalDistance/1000, 20).toFixed(1)}/20 км`;
@@ -433,7 +473,7 @@
     if (distance > recordDistance) { recordDistance = Math.floor(distance); localStorage.setItem('roadRecord', recordDistance); menuRecord.textContent = recordDistance; }
     recordDisplay.textContent = '🏆 ' + recordDistance + ' м';
 
-    const blur = Math.min(2, (player.speed - 4) * 0.7);
+    const blur = Math.min(2, (player.speed - modeConfig.playerBase) * 0.7);
     canvas.style.filter = blur > 0 ? `blur(${blur}px)` : 'none';
 
     checkCollisions();
@@ -584,7 +624,9 @@
 
   // ====== УПРАВЛЕНИЕ МЕНЮ ======
   function resetGame() {
-    player.alive = true; player.x = W/2; player.y = H-100; player.speed = 4; player.targetSpeed = 4;
+    const modeConfig = getSpeedModeConfig();
+    player.alive = true; player.x = W/2; player.y = H-100;
+    player.speed = modeConfig.playerBase; player.targetSpeed = modeConfig.playerBase;
     player.vx = 0; player.drift = 0; player.shootCooldown = 0;
     enemies = []; houses = []; bullets = []; bonuses = []; particles = [];
     distance = 0;
@@ -637,50 +679,40 @@
       btn.classList.add('selected'); currentLocation = btn.dataset.loc;
     });
   });
+  // Выбор режима скорости
+  document.querySelectorAll('.speed-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentSpeedMode = btn.dataset.mode;
+    });
+  });
   document.getElementById('playBtn').addEventListener('click', startGame);
-  menuBtn.addEventListener('click', goToMenu);
   window.addEventListener('keydown', e => { if (e.key === 'Escape' && gameRunning) goToMenu(); });
 
   const keys = {};
   window.addEventListener('keydown', e => {
     keys[e.key] = true;
     e.preventDefault();
-    if (e.key === ' ' && gameRunning && player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
-      shootBullet(); player.shootCooldown = player.maxShootCooldown;
+    if (e.key === ' ' && gameRunning) {
+      if (player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
+        shootBullet();
+        player.shootCooldown = player.maxShootCooldown;
+      } else if (!player.alive && gameOverTimer <= 0) {
+        resetGame();
+      }
     }
     if (e.key === 'Escape' && gameRunning) goToMenu();
   });
   window.addEventListener('keyup', e => { keys[e.key] = false; e.preventDefault(); });
 
-  // === ИСПРАВЛЕНИЕ: СЛУШАЕМ КЛИКИ ПО ВСЕМУ ДОКУМЕНТУ, НО ФИЛЬТРУЕМ ТОЛЬКО ПО canvas ===
-  document.addEventListener('click', (e) => {
-    // Игнорируем клики, пока не в игре
-    if (!gameRunning || !player.alive) return;
-    
-    // Берем координаты canvas и проверяем, попал ли клик в его область
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // Если клик внутри canvas
-    if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
-      if (player.cannonUnlocked && player.shootCooldown <= 0) {
-        shootBullet();
-        player.shootCooldown = player.maxShootCooldown;
-      }
-      // Если игрок мёртв и таймер истёк – перезапуск (уже обрабатывается отдельно)
-      if (!player.alive && gameOverTimer <= 0) {
-        resetGame();
-      }
-    }
-  });
-
-  // Дополнительно: слушаем клики на canvas для обратной совместимости
   canvas.addEventListener('click', () => {
-    if (!gameRunning || !player.alive) return;
-    if (player.cannonUnlocked && player.shootCooldown <= 0) {
+    if (!gameRunning) return;
+    if (player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
       shootBullet();
       player.shootCooldown = player.maxShootCooldown;
+    } else if (!player.alive && gameOverTimer <= 0) {
+      resetGame();
     }
   });
 
