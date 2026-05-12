@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, touch-action: manipulation">
-  <title>Безумная дорога – Мобильная</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover, orientation: landscape">
+  <title>Безумная дорога</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#111; display:flex; justify-content:center; align-items:center; height:100vh; font-family:Arial; overflow:hidden; touch-action: pan-x pan-y; }
@@ -13,68 +13,71 @@
       text-align:center; z-index:10; min-width:300px; max-width:90vw;
       max-height:80vh; overflow-y:auto;
     }
-    #menu h1 { font-size:28px; margin-bottom:15px; color:#ffcc00; }
-    .btn { background:#ff6600; color:white; border:none; padding:12px 30px; border-radius:30px; font-size:18px; cursor:pointer; margin:6px; transition:0.2s; box-shadow:0 4px 10px rgba(255,100,0,0.5); }
+    #menu h1 { font-size:6vw; margin-bottom:15px; color:#ffcc00; }
+    .btn { background:#ff6600; color:white; border:none; padding:12px 30px; border-radius:30px; font-size:4vw; cursor:pointer; margin:6px; transition:0.2s; box-shadow:0 4px 10px rgba(255,100,0,0.5); }
     .btn:hover { background:#ff8800; transform:scale(1.05); }
-    .skin-btn { width:36px; height:36px; border-radius:50%; border:3px solid white; margin:4px; cursor:pointer; display:inline-block; transition:0.2s; }
+    .skin-btn { width:10vw; height:10vw; border-radius:50%; border:3px solid white; margin:4px; cursor:pointer; display:inline-block; transition:0.2s; }
     .skin-btn.selected { border-color:#ffcc00; transform:scale(1.2); box-shadow:0 0 12px #ffcc00; }
-    .location-btn, .speed-btn { background:#444; color:white; border:2px solid #888; padding:8px 14px; border-radius:12px; margin:3px; cursor:pointer; transition:0.2s; font-size:14px; }
-    .location-btn.selected, .speed-btn.selected { border-color:#ffcc00; background:#ff6600; }
+    .location-btn, .speed-btn, .lang-btn { background:#444; color:white; border:2px solid #888; padding:8px 14px; border-radius:12px; margin:3px; cursor:pointer; transition:0.2s; font-size:3.5vw; }
+    .location-btn.selected, .speed-btn.selected, .lang-btn.selected { border-color:#ffcc00; background:#ff6600; }
     #gameContainer { position:relative; display:none; }
     canvas { display:block; border:2px solid #fff; background:#87CEEB; }
-    #info { position:absolute; bottom:10px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:12px; }
-    #score { position:absolute; top:10px; right:10px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:18px; font-weight:bold; }
-    #speed { position:absolute; top:10px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:16px; }
-    #gameover { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.85); color:white; padding:18px 30px; border-radius:15px; text-align:center; display:none; font-size:20px; opacity:0; transition:opacity 0.3s; }
+    #info { position:absolute; bottom:5px; left:5px; color:white; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; font-size:2.5vw; }
+    #score { position:absolute; top:5px; right:5px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:4vw; font-weight:bold; }
+    #speed { position:absolute; top:5px; left:5px; color:white; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:10px; font-size:3.5vw; }
+    #gameover { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.85); color:white; padding:18px 30px; border-radius:15px; text-align:center; display:none; font-size:6vw; opacity:0; transition:opacity 0.3s; }
     #gameover.show { display:block; opacity:1; }
-    #timeDisplay { position:absolute; top:40px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:3px 10px; border-radius:8px; font-size:14px; }
-    #cannonProgress { position:absolute; top:70px; left:10px; color:white; background:rgba(0,0,0,0.7); padding:3px 10px; border-radius:8px; font-size:14px; }
-    #cooldownBar { position:absolute; top:95px; left:10px; height:4px; background:#ffaa00; width:0%; border-radius:2px; }
+    #timeDisplay { position:absolute; top:30px; left:5px; color:white; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; font-size:3vw; }
+    #cannonProgress { position:absolute; top:55px; left:5px; color:white; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; font-size:3vw; }
+    #cooldownBar { position:absolute; top:80px; left:5px; height:3px; background:#ffaa00; width:0%; border-radius:2px; }
     #timeBar { position:absolute; bottom:0; left:0; height:4px; background:#ffaa00; }
-    #record { position:absolute; top:10px; left:50%; transform:translateX(-50%); color:#ffcc00; background:rgba(0,0,0,0.7); padding:3px 12px; border-radius:8px; font-size:14px; }
+    #record { position:absolute; top:5px; left:50%; transform:translateX(-50%); color:#ffcc00; background:rgba(0,0,0,0.7); padding:3px 12px; border-radius:8px; font-size:3.5vw; }
+    #credit { position:absolute; bottom:2px; right:5px; color:rgba(255,255,255,0.8); font-size:2.5vw; text-shadow:0 0 4px black; }
 
     .mobile-controls {
       position: absolute;
-      bottom: 10px;
+      bottom: 5px;
       left: 0;
       width: 100%;
       display: flex;
       justify-content: space-between;
-      padding: 0 10px;
+      align-items: flex-end;
+      padding: 0 5px;
       pointer-events: none;
       z-index: 5;
     }
     .ctrl-group { display: flex; gap: 5px; pointer-events: auto; }
     .ctrl-btn {
-      width: 45px; height: 45px;
-      background: rgba(255,255,255,0.35);
+      width: 12vw; height: 12vw;
+      background: rgba(255,255,255,0.3);
       border: 2px solid white; border-radius: 12px;
-      color: white; font-size: 24px;
+      color: white; font-size: 6vw;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; user-select: none; -webkit-user-select: none;
       touch-action: none; box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     }
     .ctrl-btn:active { background: rgba(255,255,255,0.7); transform: scale(0.9); }
-    .fire-btn { background: rgba(255,100,0,0.6); border-color: #ffaa00; font-size: 28px; }
+    .fire-btn { background: rgba(255,100,0,0.6); border-color: #ffaa00; font-size: 8vw; }
+    .center-fire { position: absolute; left: 50%; transform: translateX(-50%); bottom: 10px; }
   </style>
 </head>
 <body>
 <div id="menu">
-  <h1>БЕЗУМНАЯ ДОРОГА</h1>
-  <p>Локация:</p>
+  <h1 data-lang-key="title">БЕЗУМНАЯ ДОРОГА</h1>
+  <p data-lang-key="location">Локация:</p>
   <div id="locationContainer">
-    <button class="location-btn selected" data-loc="Обычная">Обычная</button>
-    <button class="location-btn" data-loc="Поле">Поле</button>
-    <button class="location-btn" data-loc="Деревня">Деревня</button>
-    <button class="location-btn" data-loc="Закат">Закат</button>
+    <button class="location-btn selected" data-loc="Обычная" data-lang-key="normal">Обычная</button>
+    <button class="location-btn" data-loc="Поле" data-lang-key="field">Поле</button>
+    <button class="location-btn" data-loc="Деревня" data-lang-key="village">Деревня</button>
+    <button class="location-btn" data-loc="Закат" data-lang-key="sunset">Закат</button>
   </div>
-  <p>Скорость:</p>
+  <p data-lang-key="speed">Скорость:</p>
   <div id="speedModeContainer">
-    <button class="speed-btn" data-mode="slow">🐢 Медленная</button>
-    <button class="speed-btn selected" data-mode="normal">🚗 Обычная</button>
-    <button class="speed-btn" data-mode="fast">🚀 Быстрая</button>
+    <button class="speed-btn" data-mode="slow" data-lang-key="slow">🐢 Медленная</button>
+    <button class="speed-btn selected" data-mode="normal" data-lang-key="normal_speed">🚗 Обычная</button>
+    <button class="speed-btn" data-mode="fast" data-lang-key="fast">🚀 Быстрая</button>
   </div>
-  <p>Цвет машины:</p>
+  <p data-lang-key="car_color">Цвет машины:</p>
   <div id="skinContainer">
     <span class="skin-btn selected" data-color="#ff4444" style="background:#ff4444;"></span>
     <span class="skin-btn" data-color="#44aaff" style="background:#44aaff;"></span>
@@ -82,7 +85,7 @@
     <span class="skin-btn" data-color="#ffaa00" style="background:#ffaa00;"></span>
     <span class="skin-btn" data-color="#ffffff" style="background:#ffffff;"></span>
   </div>
-  <p>Полоса:</p>
+  <p data-lang-key="stripe">Полоса:</p>
   <div id="skinContainer2">
     <span class="skin-btn selected" data-color2="#ffffff" style="background:#ffffff;"></span>
     <span class="skin-btn" data-color2="#000000" style="background:#000000;"></span>
@@ -90,11 +93,18 @@
     <span class="skin-btn" data-color2="#00ffff" style="background:#00ffff;"></span>
     <span class="skin-btn" data-color2="#ff4444" style="background:#ff4444;"></span>
   </div>
-  <button class="btn" id="playBtn">▶ ИГРАТЬ</button>
-  <div style="margin-top:10px;">Рекорд: <span id="menuRecord">0</span> м | Пушка: <span id="menuCannon">🔫 0/20 км</span></div>
+  <p data-lang-key="language">Язык:</p>
+  <div id="langContainer">
+    <button class="lang-btn selected" data-lang="ru">🇷🇺 Русский</button>
+    <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+    <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
+    <button class="lang-btn" data-lang="fr">🇫🇷 Français</button>
+  </div>
+  <button class="btn" id="playBtn" data-lang-key="play">▶ ИГРАТЬ</button>
+  <div style="margin-top:10px;"><span data-lang-key="record">Рекорд</span>: <span id="menuRecord">0</span> м | <span data-lang-key="cannon">Пушка</span>: <span id="menuCannon">🔫 0/20 км</span></div>
 </div>
 <div id="gameContainer">
-  <canvas id="game" width="400" height="600"></canvas>
+  <canvas id="game" width="600" height="300"></canvas>
   <div id="speed">0 км/ч</div>
   <div id="timeDisplay">День</div>
   <div id="score">0 м</div>
@@ -102,27 +112,157 @@
   <div id="cooldownBar"></div>
   <div id="record">🏆 0 м</div>
   <div id="timeBar"></div>
-  <div id="info">⬅➡ — руль | ⬆ — газ | ⬇ — тормоз | ПРОБЕЛ/КЛИК — огонь</div>
-  <div id="gameover">АВАРИЯ!<br>Кликни или нажми ПРОБЕЛ для рестарта</div>
+  <div id="credit">Разработчик: Лев Становенко</div>
+  <div id="info" data-lang-key="controls">⬅➡ руль | ⬆ газ | ⬇ тормоз | 🟠 огонь</div>
+  <div id="gameover" data-lang-key="gameover">АВАРИЯ!<br>Нажмите ОГОНЬ для рестарта</div>
   <div class="mobile-controls">
     <div class="ctrl-group">
       <button class="ctrl-btn" id="btnLeft">⬅️</button>
       <button class="ctrl-btn" id="btnRight">➡️</button>
     </div>
-    <div class="ctrl-group">
-      <button class="ctrl-btn" id="btnDown">⬇️</button>
-      <button class="ctrl-btn" id="btnUp">⬆️</button>
+    <div class="center-fire">
+      <button class="ctrl-btn fire-btn" id="btnFire">🔥</button>
     </div>
-    <button class="ctrl-btn fire-btn" id="btnFire">🔥</button>
+    <div class="ctrl-group">
+      <button class="ctrl-btn" id="btnUp">⬆️</button>
+      <button class="ctrl-btn" id="btnDown">⬇️</button>
+    </div>
   </div>
 </div>
 
 <script>
-  // ====== ПОЛНЫЙ ИГРОВОЙ ДВИЖОК (700+ строк) ======
+  // ====== ОСНОВНЫЕ ПЕРЕМЕННЫЕ ======
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
+  // Переводы
+  const translations = {
+    ru: {
+      title: 'БЕЗУМНАЯ ДОРОГА',
+      location: 'Локация:',
+      normal: 'Обычная',
+      field: 'Поле',
+      village: 'Деревня',
+      sunset: 'Закат',
+      speed: 'Скорость:',
+      slow: '🐢 Медленная',
+      normal_speed: '🚗 Обычная',
+      fast: '🚀 Быстрая',
+      car_color: 'Цвет машины:',
+      stripe: 'Полоса:',
+      language: 'Язык:',
+      play: '▶ ИГРАТЬ',
+      record: 'Рекорд',
+      cannon: 'Пушка',
+      controls: '⬅➡ руль | ⬆ газ | ⬇ тормоз | 🟠 огонь',
+      gameover: 'АВАРИЯ!<br>Нажмите ОГОНЬ для рестарта',
+      day: 'День', night: 'Ночь', morning: 'Утро', evening: 'Вечер'
+    },
+    en: {
+      title: 'CRAZY ROAD',
+      location: 'Location:',
+      normal: 'Normal',
+      field: 'Field',
+      village: 'Village',
+      sunset: 'Sunset',
+      speed: 'Speed:',
+      slow: '🐢 Slow',
+      normal_speed: '🚗 Normal',
+      fast: '🚀 Fast',
+      car_color: 'Car color:',
+      stripe: 'Stripe:',
+      language: 'Language:',
+      play: '▶ PLAY',
+      record: 'Record',
+      cannon: 'Cannon',
+      controls: '⬅➡ steer | ⬆ gas | ⬇ brake | 🟠 fire',
+      gameover: 'CRASH!<br>Press FIRE to restart',
+      day: 'Day', night: 'Night', morning: 'Morning', evening: 'Evening'
+    },
+    es: {
+      title: 'CARRETERA LOCA',
+      location: 'Ubicación:',
+      normal: 'Normal',
+      field: 'Campo',
+      village: 'Pueblo',
+      sunset: 'Atardecer',
+      speed: 'Velocidad:',
+      slow: '🐢 Lento',
+      normal_speed: '🚗 Normal',
+      fast: '🚀 Rápido',
+      car_color: 'Color del coche:',
+      stripe: 'Franja:',
+      language: 'Idioma:',
+      play: '▶ JUGAR',
+      record: 'Récord',
+      cannon: 'Cañón',
+      controls: '⬅➡ volante | ⬆ gas | ⬇ freno | 🟠 disparo',
+      gameover: '¡CHOQUE!<br>Presiona FUEGO para reiniciar',
+      day: 'Día', night: 'Noche', morning: 'Mañana', evening: 'Tarde'
+    },
+    fr: {
+      title: 'ROUTE FOLLE',
+      location: 'Emplacement:',
+      normal: 'Normal',
+      field: 'Champ',
+      village: 'Village',
+      sunset: 'Coucher du soleil',
+      speed: 'Vitesse:',
+      slow: '🐢 Lente',
+      normal_speed: '🚗 Normale',
+      fast: '🚀 Rapide',
+      car_color: 'Couleur voiture:',
+      stripe: 'Bande:',
+      language: 'Langue:',
+      play: '▶ JOUER',
+      record: 'Record',
+      cannon: 'Canon',
+      controls: '⬅➡ direction | ⬆ gaz | ⬇ frein | 🟠 tir',
+      gameover: 'ACCIDENT!<br>Appuyez sur TIR pour recommencer',
+      day: 'Jour', night: 'Nuit', morning: 'Matin', evening: 'Soir'
+    }
+  };
+
+  let currentLang = 'ru';
+  function setLanguage(lang) {
+    currentLang = lang;
+    document.querySelectorAll('[data-lang-key]').forEach(el => {
+      const key = el.dataset.langKey;
+      if (translations[lang] && translations[lang][key]) {
+        if (key === 'gameover') {
+          el.innerHTML = translations[lang][key];
+        } else {
+          el.textContent = translations[lang][key];
+        }
+      }
+    });
+    // Обновить название кнопок локаций
+    document.querySelectorAll('.location-btn').forEach(btn => {
+      const loc = btn.dataset.loc;
+      if (loc && translations[lang][loc.toLowerCase()]) {
+        btn.textContent = translations[lang][loc.toLowerCase()];
+      }
+    });
+    // Обновить кнопки скорости
+    document.querySelectorAll('.speed-btn').forEach(btn => {
+      const mode = btn.dataset.mode;
+      if (mode === 'slow') btn.textContent = translations[lang].slow;
+      else if (mode === 'normal') btn.textContent = translations[lang].normal_speed;
+      else if (mode === 'fast') btn.textContent = translations[lang].fast;
+    });
+  }
+
+  // Обработчики языков
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      setLanguage(btn.dataset.lang);
+    });
+  });
+
+  // Остальной DOM
   const menuDiv = document.getElementById('menu');
   const gameContainer = document.getElementById('gameContainer');
   const gameoverDiv = document.getElementById('gameover');
@@ -134,6 +274,8 @@
   const menuRecord = document.getElementById('menuRecord');
   const menuCannon = document.getElementById('menuCannon');
   const timeBar = document.getElementById('timeBar');
+  const infoDiv = document.getElementById('info');
+  const gameoverText = document.getElementById('gameover');
 
   let gameRunning = false;
   let playerColor1 = '#ff4444', playerColor2 = '#ffffff';
@@ -144,14 +286,15 @@
   menuRecord.textContent = recordDistance;
   updateMenuCannon();
 
-  const lanes = [60, 120, 180, 240, 300, 350];
+  const lanes = [80, 160, 240, 320, 400, 480]; // переработано под новый размер
   let roadOffset = 0;
   let enemies = [], houses = [], bullets = [], bonuses = [], particles = [];
   let enemyBaseSpeed = 4, gameOverTimer = 0, enemiesDestroyed = 0;
   let lastSpawnDist = 0, lastHouseDist = 0, lastBonusDist = 0;
 
   const player = {
-    x: W/2, y: H - 100, w: 40, h: 70,
+    x: W/2, y: H - 60,
+    w: 30, h: 50,
     speed: 3, targetSpeed: 3, vx: 0, alive: true,
     cannonUnlocked: false, shootCooldown: 0, maxShootCooldown: 15,
     shield: false, boost: false, repair: false, drift: 0
@@ -164,7 +307,7 @@
   };
   function getMode() { return speedModes[currentSpeedMode]; }
 
-  // Звук
+  // Звук (без изменений)
   let audioCtx=null, engineOsc=null, engineGain=null;
   function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); else audioCtx.resume(); }
   function startEngine() {
@@ -193,7 +336,8 @@
   window.addEventListener('click', initAudio, {once:true});
   window.addEventListener('keydown', initAudio, {once:true});
 
-  function spawnEnemy(yPos=-100) {
+  // Генерация объектов (адаптирована под новый размер)
+  function spawnEnemy(yPos=-80) {
     const set = locSettings[currentLocation];
     const lane = lanes[Math.floor(Math.random() * lanes.length)];
     const type = set.enemyTypes[Math.floor(Math.random() * set.enemyTypes.length)];
@@ -209,11 +353,11 @@
     }
     enemies.push({ x:lane, y:yPos, w, h, speed:s, type, lane, color:type==='car'?`hsl(${Math.random()*360},70%,50%)`:null, timer:0 });
   }
-  function spawnHouse(yPos=-100) {
+  function spawnHouse(yPos=-80) {
     if (!locSettings[currentLocation].house) return;
     houses.push({ x:lanes[Math.floor(Math.random()*lanes.length)], y:yPos, w:50, h:60 });
   }
-  function spawnBonus(yPos=-100) {
+  function spawnBonus(yPos=-80) {
     const t = ['shield','boost','repair'][Math.floor(Math.random()*3)];
     bonuses.push({ x:lanes[Math.floor(Math.random()*lanes.length)], y:yPos, w:30, h:30, type:t });
   }
@@ -323,7 +467,8 @@
     if (set.house && totalDistance-lastHouseDist > set.houseInterval) { spawnHouse(); lastHouseDist=totalDistance; }
     if (totalDistance-lastBonusDist > set.bonusInterval) { spawnBonus(); lastBonusDist=totalDistance; }
     moveWorld(frameDt);
-    const tod = getTimeOfDay(); timeDisplay.textContent = {day:'День', night:'Ночь', morning:'Утро', evening:'Вечер', sunset:'Закат'}[tod]||'День';
+    const tod = getTimeOfDay();
+    timeDisplay.textContent = translations[currentLang][tod] || 'День';
     timeBar.style.width = ((totalDistance%1000)/10)+'%';
     if (distance>recordDistance) { recordDistance=Math.floor(distance); localStorage.setItem('roadRecord', recordDistance); menuRecord.textContent=recordDistance; }
     recordDisplay.textContent = '🏆 '+recordDistance+' м';
@@ -347,6 +492,7 @@
     }
   }
 
+  // Отрисовка (адаптирована)
   function drawCar(x,y,w,h,c1,c2) {
     ctx.save(); ctx.translate(x,y);
     ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.roundRect(-w/2+3,-h/2+3,w,h,10); ctx.fill();
@@ -421,7 +567,7 @@
 
   function resetGame() {
     const mode = getMode();
-    player.alive=true; player.x=W/2; player.y=H-100; player.speed=mode.playerBase; player.targetSpeed=mode.playerBase;
+    player.alive=true; player.x=W/2; player.y=H-60; player.speed=mode.playerBase; player.targetSpeed=mode.playerBase;
     player.vx=0; enemies=[]; houses=[]; bullets=[]; bonuses=[]; particles=[]; distance=0;
     lastSpawnDist=totalDistance; lastHouseDist=totalDistance; lastBonusDist=totalDistance;
     gameoverDiv.classList.remove('show'); gameOverTimer=0;
@@ -431,10 +577,13 @@
 
   function startGame() {
     initAudio(); menuDiv.style.display='none'; gameContainer.style.display='block'; gameRunning=true; resetGame();
+    // Показываем подсказку на текущем языке
+    infoDiv.textContent = translations[currentLang].controls;
   }
 
   function goToMenu() {
-    gameRunning=false; gameContainer.style.display='none'; menuDiv.style.display='block'; menuRecord.textContent=recordDistance; updateMenuCannon(); stopEngine();
+    gameRunning=false; gameContainer.style.display='none'; menuDiv.style.display='block'; stopEngine();
+    menuRecord.textContent = recordDistance; updateMenuCannon();
   }
 
   // Меню
@@ -466,31 +615,28 @@
     else if (!player.alive && gameOverTimer<=0) resetGame();
   });
 
-  // ====== МОБИЛЬНЫЕ КНОПКИ (полные обработчики) ======
-  function handleTouchStart(key) { return function(e) { e.preventDefault(); keys[key] = true; }; }
-  function handleTouchEnd(key) { return function(e) { e.preventDefault(); keys[key] = false; }; }
+  // Мобильные кнопки
+  function addMultiEvent(el, key) {
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; });
+    el.addEventListener('touchend', (e) => { e.preventDefault(); keys[key] = false; });
+    el.addEventListener('mousedown', (e) => { e.preventDefault(); keys[key] = true; });
+    el.addEventListener('mouseup', (e) => { e.preventDefault(); keys[key] = false; });
+  }
+  addMultiEvent(document.getElementById('btnLeft'), 'ArrowLeft');
+  addMultiEvent(document.getElementById('btnRight'), 'ArrowRight');
+  addMultiEvent(document.getElementById('btnUp'), 'ArrowUp');
+  addMultiEvent(document.getElementById('btnDown'), 'ArrowDown');
 
-  document.getElementById('btnLeft').addEventListener('touchstart', handleTouchStart('ArrowLeft'));
-  document.getElementById('btnLeft').addEventListener('touchend', handleTouchEnd('ArrowLeft'));
-  document.getElementById('btnLeft').addEventListener('mousedown', handleTouchStart('ArrowLeft'));
-  document.getElementById('btnLeft').addEventListener('mouseup', handleTouchEnd('ArrowLeft'));
-
-  document.getElementById('btnRight').addEventListener('touchstart', handleTouchStart('ArrowRight'));
-  document.getElementById('btnRight').addEventListener('touchend', handleTouchEnd('ArrowRight'));
-  document.getElementById('btnRight').addEventListener('mousedown', handleTouchStart('ArrowRight'));
-  document.getElementById('btnRight').addEventListener('mouseup', handleTouchEnd('ArrowRight'));
-
-  document.getElementById('btnUp').addEventListener('touchstart', handleTouchStart('ArrowUp'));
-  document.getElementById('btnUp').addEventListener('touchend', handleTouchEnd('ArrowUp'));
-  document.getElementById('btnUp').addEventListener('mousedown', handleTouchStart('ArrowUp'));
-  document.getElementById('btnUp').addEventListener('mouseup', handleTouchEnd('ArrowUp'));
-
-  document.getElementById('btnDown').addEventListener('touchstart', handleTouchStart('ArrowDown'));
-  document.getElementById('btnDown').addEventListener('touchend', handleTouchEnd('ArrowDown'));
-  document.getElementById('btnDown').addEventListener('mousedown', handleTouchStart('ArrowDown'));
-  document.getElementById('btnDown').addEventListener('mouseup', handleTouchEnd('ArrowDown'));
-
-  document.getElementById('btnFire').addEventListener('touchstart', function(e) {
+  document.getElementById('btnFire').addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (gameRunning && player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
+      shootBullet();
+      player.shootCooldown = player.maxShootCooldown;
+    } else if (!player.alive && gameOverTimer <= 0) {
+      resetGame();
+    }
+  });
+  document.getElementById('btnFire').addEventListener('mousedown', (e) => {
     e.preventDefault();
     if (gameRunning && player.alive && player.cannonUnlocked && player.shootCooldown <= 0) {
       shootBullet();
@@ -500,6 +646,7 @@
     }
   });
 
+  // Полифилл roundRect
   if (!ctx.roundRect) {
     ctx.roundRect = function(x,y,w,h,r) {
       if (typeof r==='number') r={tl:r,tr:r,br:r,bl:r};
@@ -510,6 +657,7 @@
   }
 
   requestAnimationFrame(gameLoop);
+  setLanguage('ru');
 </script>
 </body>
 </html>
