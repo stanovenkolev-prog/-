@@ -94,7 +94,7 @@
   const menuRecord = document.getElementById('menuRecord');
   const menuCannon = document.getElementById('menuCannon');
   const timeBar = document.getElementById('timeBar');
-  const achievementDiv = document.createElement('div'); // не используется активно, но оставлен
+  const achievementDiv = document.createElement('div');
 
   let gameRunning = false;
   let playerColor1 = '#ff4444', playerColor2 = '#ffffff';
@@ -404,7 +404,6 @@
   document.querySelectorAll('#skinContainer .skin-btn').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('#skinContainer .skin-btn').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); playerColor1=b.dataset.color; }));
   document.querySelectorAll('#skinContainer2 .skin-btn').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('#skinContainer2 .skin-btn').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); playerColor2=b.dataset.color2; }));
   document.querySelectorAll('.location-btn').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('.location-btn').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); currentLocation=b.dataset.loc; }));
-  // Кнопки скорости: обязательно работают
   document.querySelectorAll('.speed-btn').forEach(b=>b.addEventListener('click', ()=>{
     document.querySelectorAll('.speed-btn').forEach(x=>x.classList.remove('selected'));
     b.classList.add('selected');
