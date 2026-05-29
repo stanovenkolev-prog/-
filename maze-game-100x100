@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Лабиринт 100x100 с заметной лентой</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background: #0a0a1a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: system-ui, sans-serif; }
+        #game-container { position: relative; }
+        canvas { background: #1a1a2e; display: block; border: 2px solid #4a4a6a; }
+        #ui { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 20px; background: rgba(0,0,0,0.7); padding: 5px 20px; border-radius: 20px; z-index: 10; white-space: nowrap; }
+        #controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; flex-wrap: wrap; justify-content: center; }
+        .ctrl-btn { width: 60px; height: 60px; background: #2ecc40; border: 2px solid #27ae60; border-radius: 15px; color: white; font-size: 24px; cursor: pointer; user-select: none; touch-action: manipulation; display: flex; align-items: center; justify-content: center; }
+        .ctrl-btn:active { background: #27ae60; }
+        #restart-btn { background: #e67e22; border-color: #d35400; font-size: 20px; }
+        #restart-btn:active { background: #d35400; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game" width="900" height="500"></canvas>
+        <div id="ui">🐱 Лабиринт 100x100: Найди выход!</div>
+        <div id="controls">
+            <button class="ctrl-btn" id="btnUp">↑</button>
+            <button class="ctrl-btn" id="btnLeft">←</button>
+            <button class="ctrl-btn" id="btnDown">↓</button>
+            <button class="ctrl-btn" id="btnRight">→</button>
+            <button class="ctrl-btn" id="restart-btn" title="Новый лабиринт">🔄</button>
+        </div>
+    </div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = 900, H = 500;
+const ui = document.getElementById('ui');
+
+const ROWS = 100, COLS = 100;
+const CELL_SIZE = 30;
+const PLAYER_R = 10, PLAYER_SPEED = 4;
+
+let grid, walls = [];
+let player, exitPos;
+let won = false;
+let trail = [];
+
+let cameraX, cameraY, cameraScale;
+let animationState = 'zoomOut';
+let pauseTimer = 0;
+const PAUSE_DURATION = 60;
+
+const minScale = Math.min(W / (COLS * CELL_SIZE), H / (ROWS * CELL_SIZE));
+const centerX = (COLS * CELL_SIZE) / 2;
+const centerY = (ROWS * CELL_SIZE) / 2;
+
+function generateMaze() {
+    grid = new Array(ROWS);
+    for (let i = 0; i < ROWS; i++) {
+        grid[i] = new Array(COLS);
+        for (let j = 0; j < COLS; j++) {
+            grid[i][j] = { top: true, right: true, bottom: true, left: true, visited: false };
+        }
+    }
+
+    let stack = [];
+    let startRow = 0, startCol = 0;
+    grid[startRow][startCol].visited = true;
+    stack.push({ row: startRow, col: startCol });
+
+    const dirs = [[-1,0,'top','bottom'],[0,1,'right','left'],[1,0,'bottom','top'],[0,-1,'left','right']];
+
+    while (stack.length > 0) {
+        let current = stack[stack.length-1];
+        let neighbors = [];
+        for (let [dr, dc, w1, w2] of dirs) {
+            let nr = current.row + dr, nc = current.col + dc;
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !grid[nr][nc].visited) {
+                neighbors.push({ row: nr, col: nc, wallCurr: w1, wallNeigh: w2 });
+            }
+        }
+        if (neighbors.length > 0) {
+            let next = neighbors[Math.floor(Math.random() * neighbors.length)];
+            grid[current.row][current.col][next.wallCurr] = false;
+            grid[next.row][next.col][next.wallNeigh] = false;
+            grid[next.row][next.col].visited = true;
+            stack.push({ row: next.row, col: next.col });
+        } else {
+            stack.pop();
+        }
+    }
+
+    grid[0][0].left = false;
+    grid[ROWS-1][COLS-1].right = false;
+
+    walls = [];
+    for (let i = 0; i < ROWS; i++) {
+        for (let j = 0; j < COLS; j++) {
+            if (grid[i][j].top) walls.push({ x1: j*CELL_SIZE, y1: i*CELL_SIZE, x2: (j+1)*CELL_SIZE, y2: i*CELL_SIZE });
+            if (grid[i][j].left) walls.push({ x1: j*CELL_SIZE, y1: i*CELL_SIZE, x2: j*CELL_SIZE, y2: (i+1)*CELL_SIZE });
+        }
+    }
+    for (let i = 0; i < ROWS; i++) {
+        if (grid[i][COLS-1].right) walls.push({ x1: (COLS)*CELL_SIZE, y1: i*CELL_SIZE, x2: (COLS)*CELL_SIZE, y2: (i+1)*CELL_SIZE });
+    }
+    for (let j = 0; j < COLS; j++) {
+        if (grid[ROWS-1][j].bottom) walls.push({ x1: j*CELL_SIZE, y1: (ROWS)*CELL_SIZE, x2: (j+1)*CELL_SIZE, y2: (ROWS)*CELL_SIZE });
+    }
+}
+
+function resetGame() {
+    player = { x: CELL_SIZE/2, y: CELL_SIZE/2 };
+    exitPos = { x: (COLS-1) * CELL_SIZE + CELL_SIZE/2, y: (ROWS-1) * CELL_SIZE + CELL_SIZE/2 };
+    won = false;
+    trail = [{ x: player.x, y: player.y }];
+    cameraX = player.x;
+    cameraY = player.y;
+    cameraScale = 1;
+    animationState = 'zoomOut';
+    pauseTimer = PAUSE_DURATION;
+    ui.textContent = '🐱 Лабиринт 100x100: Найди выход!';
+}
+
+function canMoveTo(newX, newY) {
+    let r = PLAYER_R;
+    let left = newX - r, right = newX + r, top = newY - r, bottom = newY + r;
+
+    if (left < 0) {
+        if (!(newY > CELL_SIZE/2 - 5 && newY < CELL_SIZE/2 + 5)) return false;
+    }
+    if (right > COLS*CELL_SIZE) {
+        if (!(newY > (ROWS-1)*CELL_SIZE + CELL_SIZE/2 - 5 && newY < (ROWS-1)*CELL_SIZE + CELL_SIZE/2 + 5)) return false;
+    }
+    if (top < 0 || bottom > ROWS*CELL_SIZE) return false;
+
+    let minCol = Math.floor(left / CELL_SIZE);
+    let maxCol = Math.floor(right / CELL_SIZE);
+    let minRow = Math.floor(top / CELL_SIZE);
+    let maxRow = Math.floor(bottom / CELL_SIZE);
+
+    for (let row = minRow; row <= maxRow; row++) {
+        for (let col = minCol; col <= maxCol; col++) {
+            if (row < 0 || row >= ROWS || col < 0 || col >= COLS) continue;
+            let cell = grid[row][col];
+            if (cell.top && top < row * CELL_SIZE && bottom > row * CELL_SIZE) return false;
+            if (cell.bottom && top < (row+1) * CELL_SIZE && bottom > (row+1) * CELL_SIZE) return false;
+            if (cell.left && left < col * CELL_SIZE && right > col * CELL_SIZE) return false;
+            if (cell.right && left < (col+1) * CELL_SIZE && right > (col+1) * CELL_SIZE) return false;
+        }
+    }
+    return true;
+}
+
+function checkExit() {
+    if (won) return;
+    let dx = player.x - exitPos.x;
+    let dy = player.y - exitPos.y;
+    if (Math.sqrt(dx*dx + dy*dy) < PLAYER_R + 12) {
+        won = true;
+        ui.textContent = '🎉 Ты выбрался из мега-лабиринта! Победа!';
+    }
+}
+
+const keysPressed = {};
+
+window.addEventListener('keydown', e => {
+    keysPressed[e.key] = true;
+    if (e.key.startsWith('Arrow')) e.preventDefault();
+});
+window.addEventListener('keyup', e => {
+    keysPressed[e.key] = false;
+    if (e.key.startsWith('Arrow')) e.preventDefault();
+});
+
+function setupButton(id, key) {
+    const btn = document.getElementById(id);
+    btn.addEventListener('mousedown', (e) => { e.preventDefault(); keysPressed[key] = true; });
+    btn.addEventListener('mouseup', () => { keysPressed[key] = false; });
+    btn.addEventListener('mouseleave', () => { keysPressed[key] = false; });
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); keysPressed[key] = true; });
+    btn.addEventListener('touchend', (e) => { e.preventDefault(); keysPressed[key] = false; });
+    btn.addEventListener('touchcancel', () => { keysPressed[key] = false; });
+}
+
+setupButton('btnUp', 'ArrowUp');
+setupButton('btnDown', 'ArrowDown');
+setupButton('btnLeft', 'ArrowLeft');
+setupButton('btnRight', 'ArrowRight');
+
+document.getElementById('restart-btn').addEventListener('click', () => {
+    generateMaze();
+    resetGame();
+});
+
+function updateTrail() {
+    if (trail.length === 0) {
+        trail.push({ x: player.x, y: player.y });
+        return;
+    }
+    let last = trail[trail.length - 1];
+    let dist = Math.hypot(player.x - last.x, player.y - last.y);
+    if (dist > 3) { // чуть меньше порог, чтобы лента была плавнее
+        trail.push({ x: player.x, y: player.y });
+    }
+    // Стирание при возврате назад (как раньше)
+    while (trail.length > 1) {
+        let lastPoint = trail[trail.length - 1];
+        let distToLast = Math.hypot(player.x - lastPoint.x, player.y - lastPoint.y);
+        if (distToLast < 14) {
+            trail.pop();
+        } else {
+            break;
+        }
+    }
+}
+
+function update() {
+    if (animationState === 'zoomOut') {
+        let targetX = centerX, targetY = centerY, targetScale = minScale;
+        cameraX += (targetX - cameraX) * 0.03;
+        cameraY += (targetY - cameraY) * 0.03;
+        cameraScale += (targetScale - cameraScale) * 0.03;
+        if (Math.abs(cameraX - targetX) < 0.5 && Math.abs(cameraY - targetY) < 0.5 && Math.abs(cameraScale - targetScale) < 0.001) {
+            cameraX = targetX; cameraY = targetY; cameraScale = targetScale;
+            animationState = 'pause';
+            pauseTimer = PAUSE_DURATION;
+        }
+    } else if (animationState === 'pause') {
+        pauseTimer--;
+        if (pauseTimer <= 0) animationState = 'zoomIn';
+    } else if (animationState === 'zoomIn') {
+        let targetX = player.x, targetY = player.y, targetScale = 1;
+        cameraX += (targetX - cameraX) * 0.03;
+        cameraY += (targetY - cameraY) * 0.03;
+        cameraScale += (targetScale - cameraScale) * 0.03;
+        if (Math.abs(cameraX - targetX) < 0.5 && Math.abs(cameraY - targetY) < 0.5 && Math.abs(cameraScale - targetScale) < 0.001) {
+            cameraX = targetX; cameraY = targetY; cameraScale = targetScale;
+            animationState = 'done';
+        }
+    } else {
+        cameraX = player.x;
+        cameraY = player.y;
+        cameraScale = 1;
+    }
+
+    if (animationState === 'done' && !won) {
+        let dx = 0, dy = 0;
+        if (keysPressed['ArrowLeft'] || keysPressed['a'] || keysPressed['ф']) dx -= PLAYER_SPEED;
+        if (keysPressed['ArrowRight'] || keysPressed['d'] || keysPressed['в']) dx += PLAYER_SPEED;
+        if (keysPressed['ArrowUp'] || keysPressed['w'] || keysPressed['ц']) dy -= PLAYER_SPEED;
+        if (keysPressed['ArrowDown'] || keysPressed['s'] || keysPressed['ы']) dy += PLAYER_SPEED;
+
+        if (dx !== 0 || dy !== 0) {
+            let newX = player.x + dx;
+            let newY = player.y + dy;
+            if (canMoveTo(newX, player.y)) player.x = newX;
+            if (canMoveTo(player.x, newY)) player.y = newY;
+        }
+        updateTrail();
+        checkExit();
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.save();
+    ctx.translate(W/2, H/2);
+    ctx.scale(cameraScale, cameraScale);
+    ctx.translate(-cameraX, -cameraY);
+
+    let viewLeft = cameraX - W/(2*cameraScale);
+    let viewRight = cameraX + W/(2*cameraScale);
+    let viewTop = cameraY - H/(2*cameraScale);
+    let viewBottom = cameraY + H/(2*cameraScale);
+
+    // Стены
+    ctx.strokeStyle = '#4a9eff';
+    ctx.lineWidth = 2 / cameraScale;
+    ctx.beginPath();
+    for (let wall of walls) {
+        if (wall.x2 < viewLeft || wall.x1 > viewRight || wall.y2 < viewTop || wall.y1 > viewBottom) continue;
+        ctx.moveTo(wall.x1, wall.y1);
+        ctx.lineTo(wall.x2, wall.y2);
+    }
+    ctx.stroke();
+
+    // Лента — теперь рисуем даже если всего одна точка (точка-маркер), и делаем толще
+    if (trail.length > 0) {
+        ctx.strokeStyle = '#FFD700'; // ярко-золотой
+        ctx.lineWidth = 5 / cameraScale;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(trail[0].x, trail[0].y);
+        for (let i = 1; i < trail.length; i++) {
+            ctx.lineTo(trail[i].x, trail[i].y);
+        }
+        ctx.stroke();
+        // Маленький кружок в последней точке, чтобы было видно кончик
+        if (trail.length > 0) {
+            let tip = trail[trail.length - 1];
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(tip.x, tip.y, 3 / cameraScale, 0, Math.PI*2);
+            ctx.fill();
+        }
+    }
+
+    // Выход
+    ctx.fillStyle = '#00ff66';
+    ctx.beginPath();
+    ctx.arc(exitPos.x, exitPos.y, PLAYER_R + 6, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#000';
+    ctx.font = `${16 / cameraScale}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🏁', exitPos.x, exitPos.y);
+
+    // Котик
+    ctx.fillStyle = '#FF8C00';
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, PLAYER_R, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(player.x-6, player.y-13);
+    ctx.lineTo(player.x-12, player.y-22);
+    ctx.lineTo(player.x-2, player.y-15);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(player.x+6, player.y-13);
+    ctx.lineTo(player.x+12, player.y-22);
+    ctx.lineTo(player.x+2, player.y-15);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(player.x-4, player.y-4, 3.5, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(player.x+4, player.y-4, 3.5, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(player.x-4, player.y-4, 1.8, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(player.x+4, player.y-4, 1.8, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+
+    if (won) {
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(0,0,W,H);
+        ctx.fillStyle = 'white';
+        ctx.font = '36px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏆 Победа!', W/2, H/2);
+    }
+}
+
+generateMaze();
+resetGame();
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+gameLoop();
+</script>
+</body>
+</html>
